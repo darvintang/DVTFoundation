@@ -33,18 +33,20 @@
 
 import Foundation
 
-public extension DispatchQueue {
-    fileprivate static var _onceToken = [String]()
+extension DispatchQueue: NameSpace {}
 
-    class func xti_once(token: String = "\(#file):\(#function):\(#line)", block: () -> Void) {
+private var DispatchQueue_onceToken = [String]()
+
+public extension WrapperSpace where BaseType == DispatchQueue {
+    static func once(token: String = "\(#file):\(#function):\(#line)", block: () -> Void) {
         objc_sync_enter(self)
         defer {
             objc_sync_exit(self)
         }
-        if self._onceToken.contains(token) {
+        if DispatchQueue_onceToken.contains(token) {
             return
         }
-        self._onceToken.append(token)
+        DispatchQueue_onceToken.append(token)
         block()
     }
 }

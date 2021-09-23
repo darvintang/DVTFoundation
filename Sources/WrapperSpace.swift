@@ -33,13 +33,13 @@
 
 import Foundation
 
-public protocol NameSpaceWrapper {
+public protocol WrapperSpace {
     associatedtype BaseType
     var base: BaseType { get }
     init(_ value: BaseType)
 }
 
-public struct NameSpaceBaseWrapper<BaseType>: NameSpaceWrapper {
+public struct BaseWrapper<BaseType>: WrapperSpace {
     public private(set) var base: BaseType
     public init(_ value: BaseType) {
         self.base = value
@@ -53,11 +53,11 @@ public protocol NameSpace {
 }
 
 public extension NameSpace {
-    var dvt: NameSpaceBaseWrapper<Self> {
-        NameSpaceBaseWrapper(self)
+    var dvt: BaseWrapper<Self> {
+        BaseWrapper(self)
     }
 
-    static var dvt: NameSpaceBaseWrapper<Self>.Type {
-        NameSpaceBaseWrapper.self
+    static var dvt: BaseWrapper<Self>.Type {
+        BaseWrapper.self
     }
 }

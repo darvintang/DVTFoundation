@@ -58,4 +58,17 @@ final class DVTFoundationTests: XCTestCase {
         XCTAssertEqual(str.dvt[10, to: 10], "")
         XCTAssertEqual(str.dvt[10, to: 12], "")
     }
+
+    func testDate() throws {
+        let f: Float = 1.0
+        var d: Double = 1.0
+
+        let format = "yyyy-MM-dd HH:mm:ss"
+        let string = "2021-01-01 16:30:20"
+        let date = string.dvt.date(of: format)
+
+        print(date?.dvt.string(of: format) as Any)
+        XCTAssertEqual(date?.dvt.string(of: format), string)
+        XCTAssertEqual(string.dvt.date(of: format), date)
+    }
 }

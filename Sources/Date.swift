@@ -1,8 +1,8 @@
 //
-//  String+.swift
+//  Date.swift
 //
 //
-//  Created by darvintang on 2021/5/17.
+//  Created by darvintang on 2021/9/23.
 //
 
 /*
@@ -33,15 +33,24 @@
 
 import Foundation
 
-public extension String {
-    func xti_urlQueryEncoded() -> String {
-        let characters = CharacterSet.urlQueryAllowed.intersection(CharacterSet(charactersIn: "!$&'()*+,;=:#[]@"))
-        let encodeUrlString = self.addingPercentEncoding(withAllowedCharacters: characters)
-        return encodeUrlString ?? ""
+public extension DateFormatter {
+    convenience init(dvt format: String) {
+        self.init()
+        self.dateFormat = format
+        self.locale = Locale.current
     }
+}
 
-    func xti_regularValidate(_ regular: String) -> Bool {
-        let predicate = NSPredicate(format: "SELF MATCHES %@", regular)
-        return predicate.evaluate(with: self)
+extension Date: NameSpace { }
+
+public extension WrapperSpace where BaseType == Date {
+    func string(of format: String = "yyyy-MM-dd") -> String {
+        DateFormatter(dvt: format).string(from: self.base)
+    }
+}
+
+public extension WrapperSpace where BaseType == String {
+    func date(of format: String = "yyyy-MM-dd") -> Date? {
+        DateFormatter(dvt: format).date(from: self.base)
     }
 }

@@ -1,8 +1,8 @@
 //
-//  Date+.swift
+//  Optional.swift
+//  
 //
-//
-//  Created by darvintang on 2021/5/8.
+//  Created by darvintang on 2021/9/23.
 //
 
 /*
@@ -32,10 +32,3 @@
  */
 
 import Foundation
-
-public extension DateFormatter {
-    convenience init(xti format: String) {
-        self.init()
-        self.dateFormat = format
-    }
-}

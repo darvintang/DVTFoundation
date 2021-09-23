@@ -34,7 +34,7 @@
 import Foundation
 
 extension String: NameSpace { }
-public extension NameSpaceWrapper where BaseType == String {
+public extension WrapperSpace where BaseType == String {
     /// 获取从`start`开始到`end`结束的`Range<String.Index>`
     ///
     /// 如果`start`或`end`不在范围内直接返回nil
@@ -123,5 +123,18 @@ public extension NameSpaceWrapper where BaseType == String {
         let left = self.base.prefix(newIndex)
         let right = self.base.suffix(from: self.base.index(self.base.startIndex, offsetBy: newIndex))
         return left + newElement + right
+    }
+
+    /// 对字符串进行URLQuery编码，可以自己设定额外的忽略字符
+    func urlQueryEncoded(in characters: String = "!$&'()*+,;=:#[]@") -> String {
+        let characters = CharacterSet.urlQueryAllowed.intersection(CharacterSet(charactersIn: characters))
+        let encodeUrlString = self.base.addingPercentEncoding(withAllowedCharacters: characters)
+        return encodeUrlString ?? ""
+    }
+
+    /// 正则校验
+    func regularValidate(_ regular: String) -> Bool {
+        let predicate = NSPredicate(format: "SELF MATCHES %@", regular)
+        return predicate.evaluate(with: self.base)
     }
 }
