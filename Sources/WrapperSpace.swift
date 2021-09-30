@@ -48,16 +48,18 @@ public struct BaseWrapper<BaseType>: WrapperSpace {
 
 public protocol NameSpace {
     associatedtype BaseType
-    var dvt: BaseType { get }
-    static var dvt: BaseType.Type { get }
+    var dvt: BaseType { get set }
+    static var dvt: BaseType.Type { get set }
 }
 
 public extension NameSpace {
     var dvt: BaseWrapper<Self> {
-        BaseWrapper(self)
+        set {}
+        get { BaseWrapper(self) }
     }
 
     static var dvt: BaseWrapper<Self>.Type {
-        BaseWrapper.self
+        set {}
+        get { BaseWrapper.self }
     }
 }
