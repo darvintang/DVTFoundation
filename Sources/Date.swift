@@ -1,8 +1,8 @@
 //
-//  NameSpaceWrapper.swift
+//  Date.swift
 //
 //
-//  Created by darvintang on 2021/9/21.
+//  Created by darvintang on 2021/9/23.
 //
 
 /*
@@ -33,33 +33,24 @@
 
 import Foundation
 
-public protocol WrapperSpace {
-    associatedtype BaseType
-    var base: BaseType { get }
-    init(_ value: BaseType)
-}
-
-public struct BaseWrapper<BaseType>: WrapperSpace {
-    public private(set) var base: BaseType
-    public init(_ value: BaseType) {
-        self.base = value
+public extension DateFormatter {
+    convenience init(dvt format: String) {
+        self.init()
+        self.dateFormat = format
+        self.locale = Locale.current
     }
 }
 
-public protocol NameSpace {
-    associatedtype BaseType
-    var dvt: BaseType { get set }
-    static var dvt: BaseType.Type { get set }
+extension Date: NameSpace { }
+
+public extension BaseWrapper where BaseType == Date {
+    func string(of format: String = "yyyy-MM-dd") -> String {
+        DateFormatter(dvt: format).string(from: self.base)
+    }
 }
 
-public extension NameSpace {
-    var dvt: BaseWrapper<Self> {
-        set {}
-        get { BaseWrapper(self) }
-    }
-
-    static var dvt: BaseWrapper<Self>.Type {
-        set {}
-        get { BaseWrapper.self }
+public extension BaseWrapper where BaseType == String {
+    func date(of format: String = "yyyy-MM-dd") -> Date? {
+        DateFormatter(dvt: format).date(from: self.base)
     }
 }

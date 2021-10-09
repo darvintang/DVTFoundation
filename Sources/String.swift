@@ -35,7 +35,7 @@ import Foundation
 import Security
 
 extension String: NameSpace { }
-public extension WrapperSpace where BaseType == String {
+public extension BaseWrapper where BaseType == String {
     /// 获取从`start`开始到`end`结束的`Range<String.Index>`
     ///
     /// 如果`start`或`end`不在范围内直接返回nil
@@ -126,6 +126,20 @@ public extension WrapperSpace where BaseType == String {
         return left + newElement + right
     }
 
+    /// 字符串替换
+    /// - Parameters:
+    ///   - start: 需要替换的字符串起始位置
+    ///   - end: 需要替换的字符串结束位置
+    ///   - replacement: 替换字符串
+    /// - Returns: 替换后的字符串
+    func replace(_ start: Int, to end: Int, with replacement: String) -> String {
+        var res = self.base
+        if let range = self.range(start, to: end) {
+            res.replaceSubrange(range, with: replacement)
+        }
+        return res
+    }
+
     /// 对字符串进行URLQuery编码，可以自己设定额外的忽略字符
     func urlQueryEncoded(in characters: String = "!$&'()*+,;=:#[]@") -> String {
         let characters = CharacterSet.urlQueryAllowed.intersection(CharacterSet(charactersIn: characters))
@@ -140,7 +154,7 @@ public extension WrapperSpace where BaseType == String {
     }
 }
 
-public extension WrapperSpace where BaseType == String {
+public extension BaseWrapper where BaseType == String {
     var md5: String {
         guard let digestData = self.base.data(using: .utf8)?.dvt.md5 else {
             return ""
@@ -149,7 +163,7 @@ public extension WrapperSpace where BaseType == String {
     }
 }
 
-public extension WrapperSpace where BaseType == String {
+public extension BaseWrapper where BaseType == String {
     /// 设置全局字符串加密的私钥，如果没有设置，每次加密需要传递公钥
     static var rsaPublic: String {
         set {
