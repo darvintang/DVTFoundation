@@ -37,7 +37,7 @@ extension DispatchQueue: NameSpace {}
 
 private var DispatchQueue_onceToken = [String]()
 
-public extension WrapperSpace where BaseType == DispatchQueue {
+public extension BaseWrapper where BaseType == DispatchQueue {
     static func once(token: String = "\(#file):\(#function):\(#line)", block: () -> Void) {
         objc_sync_enter(self)
         defer {
@@ -48,5 +48,16 @@ public extension WrapperSpace where BaseType == DispatchQueue {
         }
         DispatchQueue_onceToken.append(token)
         block()
+    }
+
+    @discardableResult static func mainAfter(deadline time: Int, block: @escaping () -> Void) -> DispatchWorkItem {
+        return DispatchQueue.main.dvt.after(deadline: time, block: block)
+    }
+
+    @discardableResult func after(deadline time: Int, block: @escaping () -> Void) -> DispatchWorkItem {
+        let item = DispatchWorkItem(block: block)
+        let deadline = DispatchTime.now() + .seconds(time)
+        self.base.asyncAfter(deadline: deadline, execute: item)
+        return item
     }
 }

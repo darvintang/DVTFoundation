@@ -12,7 +12,7 @@ import Security.SecKey
 
 extension Data: NameSpace {}
 
-public extension WrapperSpace where BaseType == Data {
+public extension BaseWrapper where BaseType == Data {
     var md5: Data {
         let length = Int(CC_MD5_DIGEST_LENGTH)
         var digestData = Data(count: length)
@@ -29,7 +29,7 @@ public extension WrapperSpace where BaseType == Data {
     }
 }
 
-public extension WrapperSpace where BaseType == Data {
+public extension BaseWrapper where BaseType == Data {
     /// 设置全局字符串加密的私钥，如果没有设置，每次加密需要传递公钥
     static var rsaPublic: String {
         set {

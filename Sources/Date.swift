@@ -43,13 +43,13 @@ public extension DateFormatter {
 
 extension Date: NameSpace { }
 
-public extension WrapperSpace where BaseType == Date {
+public extension BaseWrapper where BaseType == Date {
     func string(of format: String = "yyyy-MM-dd") -> String {
         DateFormatter(dvt: format).string(from: self.base)
     }
 }
 
-public extension WrapperSpace where BaseType == String {
+public extension BaseWrapper where BaseType == String {
     func date(of format: String = "yyyy-MM-dd") -> Date? {
         DateFormatter(dvt: format).date(from: self.base)
     }

@@ -57,6 +57,18 @@ final class DVTFoundationTests: XCTestCase {
         XCTAssertEqual(str.dvt[10, to: 1], "")
         XCTAssertEqual(str.dvt[10, to: 10], "")
         XCTAssertEqual(str.dvt[10, to: 12], "")
+        XCTAssertEqual("18112341234".dvt.replace(3, to: 6, with: "****"), "181****1234")
+        XCTAssertEqual(str.dvt.replace(0, to: 1, with: "**"), "**23456789")
+    }
+
+    func testRegularValidate() {
+
+        let string = "18112341234"
+        if string.dvt.regularValidate("^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$") {
+            print(1)
+        } else {
+            print(2)
+        }
     }
 
     func testDate() throws {
@@ -117,5 +129,15 @@ final class DVTFoundationTests: XCTestCase {
     func testMD5() throws {
         XCTAssertEqual("1234567890".dvt.md5, "E807F1FCF82D132F9BB018CA6738A19F")
         XCTAssertEqual("".dvt.md5, "D41D8CD98F00B204E9800998ECF8427E")
+    }
+
+    func testDispatchSource() {
+        DispatchSource.dvt.createTimer(repeating: 1) {
+            print(1)
+        } cancelHandler: {
+            print(2)
+        } eventHandley: {
+            print(3)
+        }
     }
 }
