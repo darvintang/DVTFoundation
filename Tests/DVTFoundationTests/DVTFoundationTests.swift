@@ -62,7 +62,6 @@ final class DVTFoundationTests: XCTestCase {
     }
 
     func testRegularValidate() {
-
         let string = "18112341234"
         if string.dvt.regularValidate("^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$") {
             print(1)
@@ -131,13 +130,11 @@ final class DVTFoundationTests: XCTestCase {
         XCTAssertEqual("".dvt.md5, "D41D8CD98F00B204E9800998ECF8427E")
     }
 
-    func testDispatchSource() {
-        DispatchSource.dvt.createTimer(repeating: 1) {
-            print(1)
-        } cancelHandler: {
-            print(2)
-        } eventHandley: {
-            print(3)
-        }
+    func testJSON() {
+        let dict = """
+        {"key":"value"}
+        """.dvtJson.json
+        print(dict)
+        XCTAssertEqual(dict as? [String : String], ["key":"value"])
     }
 }
