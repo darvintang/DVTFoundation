@@ -35,7 +35,7 @@ import Foundation
 import Security
 
 extension String: NameSpace { }
-public extension BaseWrapper where BaseType == String {
+public extension BaseWrapper where DT == String {
     /// 获取从`start`开始到`end`结束的`Range<String.Index>`
     ///
     /// 如果`start`或`end`不在范围内直接返回nil
@@ -154,7 +154,22 @@ public extension BaseWrapper where BaseType == String {
     }
 }
 
-public extension BaseWrapper where BaseType == String {
+public extension BaseWrapper where DT == String {
+    /// base64编码，编码失败返回nil
+    var base64: String? {
+        self.base.data(using: .utf8)?.base64EncodedString(options: [.lineLength64Characters])
+    }
+
+    /// base64解码，解码失败返回nil
+    var string: String? {
+        guard let data = Data(base64Encoded: self.base) else {
+            return nil
+        }
+        return String(data: data, encoding: .utf8)
+    }
+}
+
+public extension BaseWrapper where DT == String {
     var md5: String {
         guard let digestData = self.base.data(using: .utf8)?.dvt.md5 else {
             return ""
@@ -163,7 +178,7 @@ public extension BaseWrapper where BaseType == String {
     }
 }
 
-public extension BaseWrapper where BaseType == String {
+public extension BaseWrapper where DT == String {
     /// 设置全局字符串加密的私钥，如果没有设置，每次加密需要传递公钥
     static var rsaPublic: String {
         set {

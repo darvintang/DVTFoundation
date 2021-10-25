@@ -32,9 +32,9 @@
 
 import Foundation
 
-public struct JSONBaseWrapper<BaseType> {
-    public var base: BaseType
-    public init(_ value: BaseType) {
+public struct JSONBaseWrapper<JT> {
+    public var base: JT
+    public init(_ value: JT) {
         self.base = value
     }
 
@@ -59,9 +59,9 @@ public struct JSONBaseWrapper<BaseType> {
 }
 
 public protocol JSONNameSpace {
-    associatedtype BaseType
-    var dvtJson: BaseType { set get }
-    static var dvtJson: BaseType.Type { get }
+    associatedtype JT
+    var dvtJson: JT { set get }
+    static var dvtJson: JT.Type { get }
 }
 
 public extension JSONNameSpace {
