@@ -12,7 +12,7 @@ import Security.SecKey
 
 extension Data: NameSpace {}
 
-public extension BaseWrapper where BaseType == Data {
+public extension BaseWrapper where DT == Data {
     var md5: Data {
         let length = Int(CC_MD5_DIGEST_LENGTH)
         var digestData = Data(count: length)
@@ -27,9 +27,13 @@ public extension BaseWrapper where BaseType == Data {
         }
         return digestData
     }
+
+    var md5String: String {
+        return self.md5.map { String(format: "%02hhx", $0) }.joined().uppercased()
+    }
 }
 
-public extension BaseWrapper where BaseType == Data {
+public extension BaseWrapper where DT == Data {
     /// 设置全局字符串加密的私钥，如果没有设置，每次加密需要传递公钥
     static var rsaPublic: String {
         set {
@@ -240,18 +244,18 @@ public enum RSAError: Error {
 
     public var domain: String {
         switch self {
-        case let .initError(domain):
-            return "初始化失败：\(domain)"
-        case let .encryptError(domain):
-            return "加密失败：\(domain)"
-        case let .decryptError(domain):
-            return "解密失败：\(domain)"
-        case let .signatureError(domain: domain):
-            return "签名创建失败：\(domain)"
-        case let .verifyError(domain: domain):
-            return "签名验证失败：\(domain)"
-        case let .dataError(domain: domain):
-            return "数据异常：\(domain)"
+            case let .initError(domain):
+                return "初始化失败：\(domain)"
+            case let .encryptError(domain):
+                return "加密失败：\(domain)"
+            case let .decryptError(domain):
+                return "解密失败：\(domain)"
+            case let .signatureError(domain: domain):
+                return "签名创建失败：\(domain)"
+            case let .verifyError(domain: domain):
+                return "签名验证失败：\(domain)"
+            case let .dataError(domain: domain):
+                return "数据异常：\(domain)"
         }
     }
 }

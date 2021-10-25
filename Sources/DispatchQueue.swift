@@ -37,7 +37,7 @@ extension DispatchQueue: NameSpace {}
 
 private var DispatchQueue_onceToken = [String]()
 
-public extension BaseWrapper where BaseType == DispatchQueue {
+public extension BaseWrapper where DT == DispatchQueue {
     static func once(token: String = "\(#file):\(#function):\(#line)", block: () -> Void) {
         objc_sync_enter(self)
         defer {

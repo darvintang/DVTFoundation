@@ -33,17 +33,17 @@
 
 import Foundation
 
-public struct BaseWrapper<BaseType> {
-    public var base: BaseType
-    public init(_ value: BaseType) {
+public struct BaseWrapper<DT> {
+    public var base: DT
+    public init(_ value: DT) {
         self.base = value
     }
 }
 
 public protocol NameSpace {
-    associatedtype BaseType
-    var dvt: BaseType { set get }
-    static var dvt: BaseType.Type { get }
+    associatedtype DT
+    var dvt: DT { set get }
+    static var dvt: DT.Type { get }
 }
 
 public extension NameSpace {
