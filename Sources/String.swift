@@ -155,6 +155,16 @@ public extension BaseWrapper where DT == String {
 }
 
 public extension BaseWrapper where DT == String {
+    var pinyin: String {
+        let mutableString = NSMutableString(string: self.base)
+        CFStringTransform(mutableString, nil, kCFStringTransformToLatin, false)
+        CFStringTransform(mutableString, nil, kCFStringTransformStripDiacritics, false)
+        let string = String(mutableString)
+        return string
+    }
+}
+
+public extension BaseWrapper where DT == String {
     /// base64编码，编码失败返回nil
     var base64: String? {
         self.base.data(using: .utf8)?.base64EncodedString(options: [.lineLength64Characters])
