@@ -137,4 +137,7 @@ final class DVTFoundationTests: XCTestCase {
         print(dict)
         XCTAssertEqual(dict as? [String : String], ["key":"value"])
     }
+    func testPinYin(){
+        XCTAssertEqual("你好".dvt.pinyin,"ni hao")
+    }
 }
