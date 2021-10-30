@@ -59,6 +59,7 @@ final class DVTFoundationTests: XCTestCase {
         XCTAssertEqual(str.dvt[10, to: 12], "")
         XCTAssertEqual("18112341234".dvt.replace(3, to: 6, with: "****"), "181****1234")
         XCTAssertEqual(str.dvt.replace(0, to: 1, with: "**"), "**23456789")
+        XCTAssertEqual("123456789".dvt[2,to: "4"], "3")
     }
 
     func testRegularValidate() {
@@ -135,9 +136,10 @@ final class DVTFoundationTests: XCTestCase {
         {"key":"value"}
         """.dvtJson.json
         print(dict)
-        XCTAssertEqual(dict as? [String : String], ["key":"value"])
+        XCTAssertEqual(dict as? [String: String], ["key": "value"])
     }
-    func testPinYin(){
-        XCTAssertEqual("你好".dvt.pinyin,"ni hao")
+
+    func testPinYin() {
+        XCTAssertEqual("你好".dvt.pinyin, "ni hao")
     }
 }

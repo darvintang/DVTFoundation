@@ -35,18 +35,18 @@ import Foundation
 
 extension DispatchQueue: NameSpace {}
 
-private var DispatchQueue_onceToken = [String]()
+private var DispatchQueue_onceIdentifier = [String]()
 
 public extension BaseWrapper where DT == DispatchQueue {
-    static func once(token: String = "\(#file):\(#function):\(#line)", block: () -> Void) {
+    static func once(_ identifier: String = "\(#file):\(#function):\(#line)", block: () -> Void) {
         objc_sync_enter(self)
         defer {
             objc_sync_exit(self)
         }
-        if DispatchQueue_onceToken.contains(token) {
+        if DispatchQueue_onceIdentifier.contains(identifier) {
             return
         }
-        DispatchQueue_onceToken.append(token)
+        DispatchQueue_onceIdentifier.append(identifier)
         block()
     }
 
