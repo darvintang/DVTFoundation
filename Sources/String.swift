@@ -74,6 +74,25 @@ public extension BaseWrapper where DT == String {
         return "\(self.base[range])"
     }
 
+    /// 获取从`start`开始到`end`字符串出现的位置
+    ///
+    /// 首先利用components获取新的字符串；
+    /// 然后新字符串长度减去`start`得到目标字符串长度；
+    /// 通过`suffix(length)`获取目标字符串
+    ///
+    /// - Parameters:
+    ///   - start: 开始的位置
+    ///   - end: 结束的位置
+    /// - Returns: 返回结果
+    subscript(_ start: Int, to end: String) -> String {
+        let string = self.base.components(separatedBy: end).first ?? self.base
+        let length = max(0, string.count - start)
+        if length == 0 {
+            return ""
+        }
+        return "\(string.suffix(length))"
+    }
+
     /// 获取从`start`开始的`count`长度的字符串
     ///
     /// 如果`start`不在范围内或者`count <= 0`，返回一个空字符串
