@@ -1,8 +1,8 @@
 //
-//  DispatchQueue+.swift
+//  Optional.swift
+//  
 //
-//
-//  Created by darvin on 2021/5/22.
+//  Created by darvin on 2021/9/23.
 //
 
 /*
@@ -32,32 +32,3 @@
  */
 
 import Foundation
-
-extension DispatchQueue: NameSpace {}
-
-private var DispatchQueue_onceIdentifier = [String]()
-
-public extension BaseWrapper where DT == DispatchQueue {
-    static func once(_ identifier: String = "\(#file):\(#function):\(#line)", block: () -> Void) {
-        objc_sync_enter(self)
-        defer {
-            objc_sync_exit(self)
-        }
-        if DispatchQueue_onceIdentifier.contains(identifier) {
-            return
-        }
-        DispatchQueue_onceIdentifier.append(identifier)
-        block()
-    }
-
-    @discardableResult static func mainAfter(deadline time: Int, block: @escaping () -> Void) -> DispatchWorkItem {
-        return DispatchQueue.main.dvt.after(deadline: time, block: block)
-    }
-
-    @discardableResult func after(deadline time: Int, block: @escaping () -> Void) -> DispatchWorkItem {
-        let item = DispatchWorkItem(block: block)
-        let deadline = DispatchTime.now() + .seconds(time)
-        self.base.asyncAfter(deadline: deadline, execute: item)
-        return item
-    }
-}
