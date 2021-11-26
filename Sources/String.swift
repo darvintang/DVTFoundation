@@ -171,6 +171,10 @@ public extension BaseWrapper where DT == String {
         let predicate = NSPredicate(format: "SELF MATCHES %@", regular)
         return predicate.evaluate(with: self.base)
     }
+
+    func isPhone() -> Bool {
+        self.regularValidate("^1(3\\d|4[5-9]|5[0-35-9]|6[2567]|7[0-8]|8\\d|9[0-35-9])\\d{8}$")
+    }
 }
 
 public extension BaseWrapper where DT == String {
@@ -186,7 +190,7 @@ public extension BaseWrapper where DT == String {
 public extension BaseWrapper where DT == String {
     /// base64编码，编码失败返回nil
     var base64: String? {
-        self.base.data(using: .utf8)?.base64EncodedString(options: [.lineLength64Characters])
+        self.base.data(using: .utf8)?.base64EncodedString()
     }
 
     /// base64解码，解码失败返回nil
