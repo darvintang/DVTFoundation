@@ -92,3 +92,11 @@ public extension Float {
         }
     }
 }
+
+public extension Dictionary where Key == String, Value == Any {
+    static func += (left: inout [String: Any], right: [String: Any]?) {
+        right?.forEach { key, value in
+            left[key] = value
+        }
+    }
+}

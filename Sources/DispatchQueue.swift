@@ -50,13 +50,13 @@ public extension BaseWrapper where DT == DispatchQueue {
         block()
     }
 
-    @discardableResult static func mainAfter(deadline time: Int, block: @escaping () -> Void) -> DispatchWorkItem {
+    @discardableResult static func mainAfter(deadline time: Double, block: @escaping () -> Void) -> DispatchWorkItem {
         return DispatchQueue.main.dvt.after(deadline: time, block: block)
     }
 
-    @discardableResult func after(deadline time: Int, block: @escaping () -> Void) -> DispatchWorkItem {
+    @discardableResult func after(deadline time: Double, block: @escaping () -> Void) -> DispatchWorkItem {
         let item = DispatchWorkItem(block: block)
-        let deadline = DispatchTime.now() + .seconds(time)
+        let deadline = DispatchTime.now() + .milliseconds(Int(time * 1000))
         self.base.asyncAfter(deadline: deadline, execute: item)
         return item
     }
