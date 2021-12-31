@@ -74,7 +74,7 @@ public extension BaseWrapper where DT == String {
         return "\(self.base[range])"
     }
 
-    /// 获取从`start`开始到`end`字符串出现的位置
+    /// 获取从`start`开始到`end`字符串出现的位置的字符串
     ///
     /// 首先利用components获取新的字符串；
     /// 然后新字符串长度减去`start`得到目标字符串长度；
@@ -123,9 +123,7 @@ public extension BaseWrapper where DT == String {
         guard index >= 0, index < self.base.count else {
             return ""
         }
-        var newIndex = self.base.startIndex
-        self.base.formIndex(&newIndex, offsetBy: index)
-        return "\(self.base[newIndex])"
+        return "\(self.base[String.Index(utf16Offset: index, in: self.base)])"
     }
 
     /// 将字符串插入到`index`
