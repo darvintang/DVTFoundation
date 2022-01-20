@@ -5,7 +5,7 @@
 //  Created by darvin on 2022/1/1.
 //
 
-import UIKit
+import Foundation
 
 public extension NSObject {
     static func swizzleSelector(_ origin: Selector, swizzle: Selector) {

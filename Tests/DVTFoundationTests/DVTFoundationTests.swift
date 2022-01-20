@@ -135,7 +135,7 @@ final class DVTFoundationTests: XCTestCase {
         let dict = """
         {"key":"value"}
         """.dvtJson.json
-        print([["key": "value", "key1": 123],["key": "value", "key1": 123]].dvtJson.jsonString ?? "")
+        print([["key": "value", "key1": 123], ["key": "value", "key1": 123]].dvtJson.jsonString ?? "")
         XCTAssertEqual(dict as? [String: String], ["key": "value"])
     }
 
@@ -144,6 +144,9 @@ final class DVTFoundationTests: XCTestCase {
     }
 
     func testPhone() {
-        XCTAssertTrue("11112312312".dvt.isPhone())
+//        XCTAssertTrue("11112312312".dvt.isPhone())
+        var list = ["12"]
+        XCTAssertEqual(list.dvt_remove("12"), "12")
+        XCTAssertTrue(list.isEmpty)
     }
 }
