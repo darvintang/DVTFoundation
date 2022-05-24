@@ -45,6 +45,10 @@ public extension BaseWrapper where DT == Bundle {
         (self.base.infoDictionary?["CFBundleVersion"] as? String) ?? ""
     }
 
+    var name: String {
+        (self.base.infoDictionary?["CFBundleDisplayName"] as? String) ?? ""
+    }
+
     var bundleId: String {
         (self.base.infoDictionary?["CFBundleIdentifier"] as? String) ?? ""
     }

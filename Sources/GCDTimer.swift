@@ -176,7 +176,7 @@ open class GCDTimer {
         }
     }
 
-    /// 恢复计时器，计时器在`activate`和`suspend`状态有效
+    /// 取消计时器，计时器在`activate`和`suspend`状态有效
     public func cancel() {
         pthread_mutex_lock(&self.mutex)
         defer {
