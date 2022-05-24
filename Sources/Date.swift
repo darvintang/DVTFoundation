@@ -47,6 +47,22 @@ public extension BaseWrapper where DT == Date {
     func string(of format: String = "yyyy-MM-dd") -> String {
         DateFormatter(dvt: format).string(from: self.base)
     }
+
+    func addYear(_ number: Int) -> Date {
+        return Calendar(identifier: .gregorian).date(byAdding: .year, value: number, to: self.base) ?? self.base.addingTimeInterval(3600 * 24 * 365)
+    }
+
+    func addMonth(_ number: Int) -> Date {
+        return Calendar(identifier: .gregorian).date(byAdding: .month, value: number, to: self.base) ?? self.base.addingTimeInterval(3600 * 24 * 30)
+    }
+
+    func addWeek(_ number: Int) -> Date {
+        return Calendar(identifier: .gregorian).date(byAdding: .weekday, value: number, to: self.base) ?? self.base.addingTimeInterval(3600 * 24 * 7)
+    }
+
+    func addDay(_ number: Int) -> Date {
+        return Calendar(identifier: .gregorian).date(byAdding: .day, value: number, to: self.base) ?? self.base.addingTimeInterval(3600 * 24)
+    }
 }
 
 public extension BaseWrapper where DT == String {

@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'DVTFoundation'
-  s.version          = '1.0.3'
+  s.version          = '1.2'
   s.summary          = 'DVTFoundation'
 
   s.description      = <<-DESC
@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '10.12'
 
   s.source_files = 'Sources/**/*.swift'
-
+  s.frameworks = "Security"
   s.swift_version = '5'
   s.requires_arc  = true
 end
