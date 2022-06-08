@@ -97,12 +97,14 @@ extension Array: MirrorProtocol {
 
 extension Dictionary: MirrorProtocol {
     public var mirrorValue: Any? {
-        self.compactMap { (key: Hashable, value: Value) -> [String: Any?] in
+        var dict: [String: Any] = [:]
+        self.forEach { (key: Hashable, value: Value) in
+            dict["\(key)"] = value
             if let v = value as? MirrorProtocol {
-                return ["\(key)": v.mirrorValue]
+                dict["\(key)"] = v.mirrorValue
             }
-            return ["\(key)": value]
         }
+        return dict
     }
 }
 
@@ -149,21 +151,30 @@ extension NSObject: MirrorProtocol {
     }
 }
 
-extension String: MirrorProtocol {
-    public var mirrorValue: Any? {
-        return self.data(using: .utf8)?.mirrorValue
-    }
-}
-
-extension Data: MirrorProtocol {
-    public var mirrorValue: Any? {
-        return try? JSONSerialization.jsonObject(with: self, options: .fragmentsAllowed)
-    }
-}
+// extension String: MirrorProtocol {
+//    public var mirrorValue: Any? {
+//        return self.data(using: .utf8)?.mirrorValue ?? self
+//    }
+// }
+//
+// extension Data: MirrorProtocol {
+//    public var mirrorValue: Any? {
+//        return try? JSONSerialization.jsonObject(with: self, options: .fragmentsAllowed)
+//    }
+// }
 
 extension NSObject: JSONNameSpace { }
 extension Array: JSONNameSpace {}
 extension Dictionary: JSONNameSpace {}
 extension Set: JSONNameSpace {}
 extension String: JSONNameSpace {}
-extension Data: JSONNameSpace {}
+// extension Data: JSONNameSpace {}
+
+extension JSONBaseWrapper where JT == String {
+    public var json: Any? {
+        if let data = self.base.data(using: .utf8) {
+            return try? JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
+        }
+        return nil
+    }
+}

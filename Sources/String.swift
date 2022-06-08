@@ -32,7 +32,6 @@
  */
 
 import Foundation
-import Security
 
 extension String: NameSpace { }
 public extension BaseWrapper where DT == String {
@@ -206,80 +205,5 @@ public extension BaseWrapper where DT == String {
             return ""
         }
         return digestData.map { String(format: "%02hhx", $0) }.joined().uppercased()
-    }
-}
-
-public extension BaseWrapper where DT == String {
-    /// 设置全局字符串加密的私钥，如果没有设置，每次加密需要传递公钥
-    static var rsaPublic: String {
-        set {
-            Data.dvt.rsaPublic = newValue
-        }
-        get {
-            Data.dvt.rsaPublic
-        }
-    }
-
-    /// 设置全局字符串解密的私钥，如果没有设置，每次解密需要传递私钥
-    static var rsaPrivate: String {
-        set {
-            Data.dvt.rsaPrivate = newValue
-        }
-        get {
-            Data.dvt.rsaPrivate
-        }
-    }
-
-    /// 校验RSA签名
-    /// - Parameters:
-    ///   - publicKey: 公钥
-    ///   - signature: 签名
-    ///   - algorithm: 签名类型
-    /// - Returns: 结果
-    func rsaVerify(_ publicKey: String = "", signature: String, algorithm: SecKeyAlgorithm = .rsaSignatureMessagePKCS1v15SHA256) throws -> Bool {
-        guard let signatureData = Data(base64Encoded: signature) else {
-            throw RSAError.dataError(domain: "签名字符串异常")
-        }
-        guard let signedData = self.base.data(using: .utf8) else {
-            throw RSAError.dataError(domain: "被签名字符串异常")
-        }
-        return try signedData.dvt.rsaVerify(publicKey, signature: signatureData, algorithm: algorithm)
-    }
-
-    /// 获取一个RSA签名
-    /// - Parameters:
-    ///   - privateKey: 私钥
-    ///   - algorithm: 类型
-    /// - Returns: 签名
-    func rsaSigned(_ privateKey: String = "", algorithm: SecKeyAlgorithm = .rsaSignatureMessagePKCS1v15SHA256) throws -> String {
-        guard let signedData = self.base.data(using: .utf8) else {
-            throw RSAError.dataError(domain: "被签名字符串异常")
-        }
-        let data = try signedData.dvt.rsaSigned(privateKey, algorithm: algorithm)
-        return data.base64EncodedString()
-    }
-
-    /// 获取加密后的字符串
-    /// - Parameter privateKey: 公钥
-    /// - Returns: 加密后的结果
-    func rsaEncrypt(_ publicKey: String = "", algorithm: SecKeyAlgorithm = .rsaEncryptionPKCS1) throws -> String {
-        guard let baseString = self.base.data(using: .utf8) else {
-            throw RSAError.dataError(domain: "被加密字符串异常")
-        }
-        return try baseString.dvt.rsaEncrypt(publicKey, algorithm: algorithm).base64EncodedString()
-    }
-
-    /// 获取解密后的字符串
-    /// - Parameter privateKey: 私钥
-    /// - Returns: 解密后的结果
-    func rsaDecrypt(_ privateKey: String = "", algorithm: SecKeyAlgorithm = .rsaEncryptionPKCS1) throws -> String {
-        guard let signedData = Data(base64Encoded: self.base, options: [.ignoreUnknownCharacters]) else {
-            throw RSAError.dataError(domain: "被解密字符串异常")
-        }
-        let data = try signedData.dvt.rsaDecrypt(privateKey, algorithm: algorithm)
-        guard let res = String(data: data, encoding: .utf8) else {
-            throw RSAError.dataError(domain: "解密数据转字符串失败")
-        }
-        return res
     }
 }
