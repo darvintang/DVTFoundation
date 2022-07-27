@@ -53,6 +53,14 @@ public extension BaseWrapper where DT == Data {
     }
 
     var md5String: String {
-        return self.md5.map { String(format: "%02hhx", $0) }.joined().uppercased()
+        self.md5.map { String(format: "%02hhx", $0) }.joined().uppercased()
+    }
+
+    func string(_ encoding: String.Encoding = .utf8) -> String? {
+        String(data: self.base, encoding: encoding)
+    }
+
+    var utf8String: String? {
+        self.string()
     }
 }
