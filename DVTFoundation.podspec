@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
 
   s.description      = <<-DESC
   TODO:
-    DVTFoundation
+    Foundation的扩展合集，以及一些工具类的封装，例如GCDTimer，封装GCD的计时器
   DESC
 
   s.homepage         = 'https://github.com/darvintang/DVTFoundation'
