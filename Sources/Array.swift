@@ -1,8 +1,8 @@
 //
-//  NameSpaceWrapper.swift
+//  Array.swift
 //
 //
-//  Created by darvin on 2021/9/21.
+//  Created by darvin on 2022/1/19.
 //
 
 /*
@@ -33,21 +33,20 @@
 
 import Foundation
 
-public struct BaseWrapper<DT> {
-    public var base: DT
-    public init(_ value: DT) {
-        self.base = value
+public extension Array {
+    @discardableResult
+    mutating func dvt_remove(_ element: Element) -> Element? where Element: Equatable {
+        if let index = self.firstIndex(of: element) {
+            return self.remove(at: index)
+        }
+        return nil
     }
-}
 
-public protocol NameSpace {
-    associatedtype DT
-    var dvt: DT { set get }
-    static var dvt: DT.Type { get }
-}
-
-public extension NameSpace {
-    var dvt: BaseWrapper<Self> { set {} get { BaseWrapper(self) }}
-
-    static var dvt: BaseWrapper<Self>.Type { BaseWrapper.self }
+    @discardableResult
+    mutating func dvt_remove(where element: (Element) -> Bool) -> Element? {
+        if let index = self.firstIndex(where: element) {
+            return self.remove(at: index)
+        }
+        return nil
+    }
 }

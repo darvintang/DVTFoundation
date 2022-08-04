@@ -8,7 +8,7 @@
 
  MIT License
 
- Copyright (c) 2021 darvin http://blog.tcoding.cn
+ Copyright (c) 2022 darvin http://blog.tcoding.cn
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -151,24 +151,11 @@ extension NSObject: MirrorProtocol {
     }
 }
 
-// extension String: MirrorProtocol {
-//    public var mirrorValue: Any? {
-//        return self.data(using: .utf8)?.mirrorValue ?? self
-//    }
-// }
-//
-// extension Data: MirrorProtocol {
-//    public var mirrorValue: Any? {
-//        return try? JSONSerialization.jsonObject(with: self, options: .fragmentsAllowed)
-//    }
-// }
-
 extension NSObject: JSONNameSpace { }
 extension Array: JSONNameSpace {}
 extension Dictionary: JSONNameSpace {}
 extension Set: JSONNameSpace {}
 extension String: JSONNameSpace {}
-// extension Data: JSONNameSpace {}
 
 extension JSONBaseWrapper where JT == String {
     public var json: Any? {

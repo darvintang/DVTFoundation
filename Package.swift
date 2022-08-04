@@ -7,14 +7,15 @@ let package = Package(
     name: "DVTFoundation",
 
     platforms: [
-        .macOS(.v10_12),
-        .iOS(.v10),
+        .macOS(.v10_14),
+        .iOS(.v12)
     ],
 
     products: [
-        .library(name: "DVTFoundation",
-                 targets: ["DVTFoundation"]
-                ),
+        .library(
+            name: "DVTFoundation",
+            targets: ["DVTFoundation"]
+        )
     ],
 
     targets: [
@@ -26,8 +27,6 @@ let package = Package(
         .testTarget(
             name: "DVTFoundationTests",
             dependencies: ["DVTFoundation"]
-        ),
-    ],
-    
-    swiftLanguageVersions: [.v5]
+        )
+    ]
 )

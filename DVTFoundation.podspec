@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'DVTFoundation'
-  s.version          = '1.3.1'
+  s.version          = '2.0.0'
   s.summary          = 'DVTFoundation'
 
   s.description      = <<-DESC
@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
 
   s.homepage         = 'https://github.com/darvintang/DVTFoundation'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'xt-input' => 'input@tcoding.cn' }
+  s.author           = { 'darvin' => 'darvin@tcoding.cn' }
   s.source           = { :git => 'https://github.com/darvintang/DVTFoundation.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '12.0'
