@@ -125,9 +125,11 @@ extension NSObject: MirrorProtocol {
         if let list = self as? [Any] {
             return list.mirrorValue
         }
+
         if let dict = self as? [String: Any] {
             return dict.mirrorValue
         }
+
         if let set = self as? NSSet {
             return set.compactMap { e -> Any? in
                 if let v = e as? MirrorProtocol {
@@ -137,7 +139,18 @@ extension NSObject: MirrorProtocol {
                 }
             }
         }
+
+        if (self as? String) != nil || (self as? NSNumber) != nil {
+            return self
+        }
+
+        let propertys = self.propertysNames()
         var dict: [String: Any] = [:]
+
+        for key in propertys {
+            dict[key] = self.value(forKey: key)
+        }
+
         Mirror(reflecting: self).children.forEach { child in
             if let key = child.label {
                 if let value = child.value as? MirrorProtocol {
@@ -148,6 +161,50 @@ extension NSObject: MirrorProtocol {
             }
         }
         return dict
+    }
+
+    private func propertysNames() -> [String] {
+        return Self.propertysNames() ?? []
+    }
+
+    private static var cacheKeyDict: [String: [String]] = [:]
+
+    private static func propertysNames() -> [String]? {
+        let key = "\(self)"
+        if let list = self.cacheKeyDict[key] {
+            return list
+        }
+
+        var propertyNames: [String] = []
+        let cls: AnyClass = self
+
+        if cls == NSObject.self {
+            return nil
+        }
+
+        var count: UInt32 = 0
+        if let properties = class_copyPropertyList(cls, &count) {
+            let intCount = Int(count)
+            for i in 0 ..< intCount {
+                let property = properties[i]
+                let propertyName = String(cString: property_getName(property))
+                propertyNames.append(propertyName)
+            }
+            free(properties)
+        }
+        if let tcls = self.superclass(), let list = (tcls as? NSObject.Type)?.propertysNames(), !list.isEmpty {
+            propertyNames += list
+        }
+        let list = propertyNames.sorted()
+        print(list)
+        self.cacheKeyDict[key] = list
+        return list
+    }
+}
+
+extension String: MirrorProtocol {
+    public var mirrorValue: Any? {
+        self
     }
 }
 
