@@ -182,6 +182,14 @@ public extension BaseWrapper where DT == String {
         let string = String(mutableString)
         return string
     }
+
+    var reverse: String {
+        var resstr = ""
+        self.base.forEach { c in
+            resstr = "\(c)" + resstr
+        }
+        return resstr
+    }
 }
 
 public extension BaseWrapper where DT == String {
@@ -192,7 +200,7 @@ public extension BaseWrapper where DT == String {
 
     /// base64解码，解码失败返回nil
     var string: String? {
-        guard let data = Data(base64Encoded: self.base) else {
+        guard let data = self.base64Data else {
             return nil
         }
         return String(data: data, encoding: .utf8)
@@ -205,5 +213,11 @@ public extension BaseWrapper where DT == String {
             return ""
         }
         return digestData.map { String(format: "%02hhx", $0) }.joined().uppercased()
+    }
+}
+
+public extension BaseWrapper where BaseType == String {
+    var base64Data: Data? {
+        Data(base64Encoded: self.base)
     }
 }
