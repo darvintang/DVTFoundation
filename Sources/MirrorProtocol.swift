@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  MirrorProtocol.swift
 //
 //
 //  Created by darvin on 2021/10/22.
@@ -32,39 +32,9 @@
 
 import Foundation
 
-public struct JSONBaseWrapper<JT> {
-    public var base: JT
-    public init(_ value: JT) {
-        self.base = value
-    }
-}
-
-public protocol JSONNameSpace {
-    associatedtype JT
-    var dvtJson: JT { set get }
-    static var dvtJson: JT.Type { get }
-}
-
-public extension JSONNameSpace {
-    var dvtJson: JSONBaseWrapper<Self> { set {} get { JSONBaseWrapper(self) }}
-    static var dvtJson: JSONBaseWrapper<Self>.Type { JSONBaseWrapper.self }
-}
-
-extension JSONBaseWrapper where JT: MirrorProtocol {
-    public var json: Any? {
-        self.base.mirrorValue
-    }
-
-    public var jsonString: String? {
-        if let value = self.json, let data = try? JSONSerialization.data(withJSONObject: value, options: .fragmentsAllowed) {
-            return String(data: data, encoding: .utf8)
-        }
-        return nil
-    }
-}
-
 public protocol MirrorProtocol {
     var mirrorValue: Any? { get }
+    var jsonString: String? { get }
 }
 
 extension MirrorProtocol {
@@ -74,12 +44,19 @@ extension MirrorProtocol {
             if let key = child.label {
                 if let value = child.value as? MirrorProtocol {
                     dict[key] = value.mirrorValue
-                } else {
+                } else if JSONSerialization.isValidJSONObject(child.value) {
                     dict[key] = child.value
                 }
             }
         }
         return dict
+    }
+
+    public var jsonString: String? {
+        if let value = self.mirrorValue, let data = try? JSONSerialization.data(withJSONObject: value, options: [.sortedKeys, .fragmentsAllowed]) {
+            return String(data: data, encoding: .utf8)
+        }
+        return nil
     }
 }
 
@@ -88,8 +65,10 @@ extension Array: MirrorProtocol {
         self.compactMap { e -> Any? in
             if let v = e as? MirrorProtocol {
                 return v.mirrorValue
-            } else {
+            } else if JSONSerialization.isValidJSONObject(e) {
                 return e
+            } else {
+                return nil
             }
         }
     }
@@ -102,6 +81,8 @@ extension Dictionary: MirrorProtocol {
             dict["\(key)"] = value
             if let v = value as? MirrorProtocol {
                 dict["\(key)"] = v.mirrorValue
+            } else if JSONSerialization.isValidJSONObject(value) {
+                dict["\(key)"] = value
             }
         }
         return dict
@@ -113,8 +94,10 @@ extension Set: MirrorProtocol {
         self.compactMap { e -> Any? in
             if let v = e as? MirrorProtocol {
                 return v.mirrorValue
-            } else {
+            } else if JSONSerialization.isValidJSONObject(e) {
                 return e
+            } else {
+                return nil
             }
         }
     }
@@ -134,8 +117,10 @@ extension NSObject: MirrorProtocol {
             return set.compactMap { e -> Any? in
                 if let v = e as? MirrorProtocol {
                     return v.mirrorValue
-                } else {
+                } else if JSONSerialization.isValidJSONObject(e) {
                     return e
+                } else {
+                    return nil
                 }
             }
         }
@@ -155,7 +140,7 @@ extension NSObject: MirrorProtocol {
             if let key = child.label {
                 if let value = child.value as? MirrorProtocol {
                     dict[key] = value.mirrorValue
-                } else {
+                } else if JSONSerialization.isValidJSONObject(child.value) {
                     dict[key] = child.value
                 }
             }
@@ -196,29 +181,41 @@ extension NSObject: MirrorProtocol {
             propertyNames += list
         }
         let list = propertyNames.sorted()
-        print(list)
         self.cacheKeyDict[key] = list
         return list
     }
 }
 
-extension String: MirrorProtocol {
+extension URL: MirrorProtocol {
+    public var mirrorValue: Any? {
+        self.absoluteString
+    }
+}
+
+public protocol ExpressibleAllLiteral: MirrorProtocol {
+}
+
+extension ExpressibleAllLiteral {
     public var mirrorValue: Any? {
         self
     }
 }
 
-extension NSObject: JSONNameSpace { }
-extension Array: JSONNameSpace {}
-extension Dictionary: JSONNameSpace {}
-extension Set: JSONNameSpace {}
-extension String: JSONNameSpace {}
+extension Int: ExpressibleAllLiteral {}
+extension Int8: ExpressibleAllLiteral {}
+extension Int16: ExpressibleAllLiteral {}
+extension Int32: ExpressibleAllLiteral {}
+extension Int64: ExpressibleAllLiteral {}
 
-extension JSONBaseWrapper where JT == String {
-    public var json: Any? {
-        if let data = self.base.data(using: .utf8) {
-            return try? JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
-        }
-        return nil
-    }
-}
+extension Float: ExpressibleAllLiteral {}
+extension CGFloat: ExpressibleAllLiteral {}
+
+extension Double: ExpressibleAllLiteral {}
+
+extension Decimal: ExpressibleAllLiteral {}
+
+extension String: ExpressibleAllLiteral {}
+extension Substring: ExpressibleAllLiteral {}
+extension Character: ExpressibleAllLiteral {}
+
+extension Bool: ExpressibleAllLiteral {}

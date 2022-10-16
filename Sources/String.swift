@@ -221,3 +221,9 @@ public extension BaseWrapper where BaseType == String {
         Data(base64Encoded: self.base)
     }
 }
+
+public extension BaseWrapper where BaseType == String {
+    var url: URL? {
+        URL(string: self.base)
+    }
+}

@@ -1,8 +1,8 @@
 //
-//  Array.swift
+//  Dictionary.swift
 //
 //
-//  Created by darvin on 2022/1/19.
+//  Created by darvin on 2022/10/16.
 //
 
 /*
@@ -33,33 +33,18 @@
 
 import Foundation
 
-public extension Array {
-    @discardableResult
-    mutating func dvt_remove(_ element: Element) -> Element? where Element: Equatable {
-        if let index = self.firstIndex(of: element) {
-            return self.remove(at: index)
-        }
-        return nil
-    }
+public struct DictionarySpace<Key: Hashable, Value> {
+    fileprivate var base: [Key: Value]
+}
 
-    @discardableResult
-    mutating func dvt_remove(where element: (Element) -> Bool) -> Element? {
-        if let index = self.firstIndex(where: element) {
-            return self.remove(at: index)
-        }
-        return nil
+extension DictionarySpace {
+    public var childs: [(key: Key, value: Value)] {
+        return self.base.map({ ($0.key, $0.value) })
     }
 }
 
-public struct ArraySpace<Element> {
-    fileprivate var base: [Element]
-}
-
-extension ArraySpace {
-}
-
-extension Array {
-    public var dvt: ArraySpace<Element> {
-        ArraySpace(base: self)
+extension Dictionary {
+    public var dvt: DictionarySpace<Key, Value> {
+        DictionarySpace(base: self)
     }
 }
