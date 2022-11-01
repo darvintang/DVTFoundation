@@ -34,7 +34,8 @@
 import Foundation
 
 extension String: NameSpace { }
-public extension BaseWrapper where DT == String {
+
+public extension BaseWrapper where BaseType == String {
     /// 获取从`start`开始到`end`结束的`Range<String.Index>`
     ///
     /// 如果`start`或`end`不在范围内直接返回nil
@@ -156,6 +157,15 @@ public extension BaseWrapper where DT == String {
         return res
     }
 
+    /// 字符串替换
+    /// - Parameters:
+    ///   - of: 需要替换的字符串
+    ///   - replacement: 替换字符串
+    /// - Returns: 替换后的字符串
+    func replace(_ of: String, with replacement: String) -> String {
+        return self.base.replacingOccurrences(of: of, with: replacement)
+    }
+
     /// 对字符串进行URLQuery编码，可以自己设定额外的忽略字符
     func urlQueryEncoded(in characters: String = "!$&'()*+,;=:#[]@") -> String {
         let characters = CharacterSet.urlQueryAllowed.intersection(CharacterSet(charactersIn: characters))
@@ -174,7 +184,7 @@ public extension BaseWrapper where DT == String {
     }
 }
 
-public extension BaseWrapper where DT == String {
+public extension BaseWrapper where BaseType == String {
     var pinyin: String {
         let mutableString = NSMutableString(string: self.base)
         CFStringTransform(mutableString, nil, kCFStringTransformToLatin, false)
@@ -192,7 +202,7 @@ public extension BaseWrapper where DT == String {
     }
 }
 
-public extension BaseWrapper where DT == String {
+public extension BaseWrapper where BaseType == String {
     /// base64编码，编码失败返回nil
     var base64: String? {
         self.base.data(using: .utf8)?.base64EncodedString()
@@ -207,7 +217,7 @@ public extension BaseWrapper where DT == String {
     }
 }
 
-public extension BaseWrapper where DT == String {
+public extension BaseWrapper where BaseType == String {
     var md5: String {
         guard let digestData = self.base.data(using: .utf8)?.dvt.md5 else {
             return ""
@@ -225,5 +235,12 @@ public extension BaseWrapper where BaseType == String {
 public extension BaseWrapper where BaseType == String {
     var url: URL? {
         URL(string: self.base)
+    }
+}
+
+extension Substring: NameSpace { }
+public extension BaseWrapper where BaseType == Substring {
+    var string: String {
+        String(self.base)
     }
 }
