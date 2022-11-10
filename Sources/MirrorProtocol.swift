@@ -54,7 +54,7 @@ extension MirrorProtocol {
 
     public var jsonString: String? {
         if let value = self.mirrorValue, let data = try? JSONSerialization.data(withJSONObject: value, options: [.sortedKeys, .fragmentsAllowed]) {
-            return String(data: data, encoding: .utf8)
+            return String(data: data, encoding: .utf8)?.dvt.replace("\\/", with: "/")
         }
         return nil
     }
