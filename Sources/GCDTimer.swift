@@ -68,7 +68,7 @@ open class GCDTimer {
     private let deadline: DispatchTime
     /// 时间间隔
     public let interval: DispatchTimeInterval
-    /// 计时器取消时执行的任务
+    /// 计时器注册时执行的任务
     public var registrationHandler: (() -> Void)?
     /// 计时器任务
     private let workItem: DispatchWorkItem
@@ -240,5 +240,25 @@ open class GCDTimer {
             self.source = nil
         }
         pthread_mutex_destroy(&self.mutex)
+    }
+}
+
+extension GCDTimer {
+    /// 初始化一个计时器
+    /// - Parameters:
+    ///   - queue: 计时器任务执行的队列
+    ///   - deadline: 延迟时间, 秒
+    ///   - workItem: 任务
+    public convenience init(queue: DispatchQueue = .main, deadline: TimeInterval, workItem: DispatchWorkItem) {
+        self.init(queue: queue, deadline: .now() + deadline, repeating: .never, auto: true, workItem: workItem)
+    }
+
+    /// 初始化一个计时器
+    /// - Parameters:
+    ///   - queue: 计时器任务执行的队列
+    ///   - deadline: 延迟时间, 秒
+    ///   - eventHandler: 任务
+    public convenience init(queue: DispatchQueue = .main, deadline: TimeInterval, eventHandler: @escaping () -> Void) {
+        self.init(queue: queue, deadline: .now() + deadline, repeating: .never, auto: true, eventHandler: eventHandler)
     }
 }
