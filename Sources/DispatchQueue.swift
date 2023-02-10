@@ -1,6 +1,6 @@
 //
 //  DispatchQueue+.swift
-//
+//  DVTFoundation
 //
 //  Created by darvin on 2021/5/22.
 //
@@ -9,7 +9,7 @@
 
  MIT License
 
- Copyright (c) 2022 darvin http://blog.tcoding.cn
+ Copyright (c) 2023 darvin http://blog.tcoding.cn
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ extension DispatchQueue: NameSpace {}
 
 private var DispatchQueue_onceIdentifier = [String]()
 
-public extension BaseWrapper where DT == DispatchQueue {
+public extension BaseWrapper where BaseType == DispatchQueue {
     static func once(_ identifier: String = "\(#file):\(#function):\(#line)", block: () -> Void) {
         objc_sync_enter(self)
         defer {

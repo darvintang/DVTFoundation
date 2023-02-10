@@ -1,6 +1,6 @@
 //
 //  String.swift
-//
+//  DVTFoundation
 //
 //  Created by darvin on 2021/9/21.
 //
@@ -9,7 +9,7 @@
 
  MIT License
 
- Copyright (c) 2022 darvin http://blog.tcoding.cn
+ Copyright (c) 2023 darvin http://blog.tcoding.cn
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -36,6 +36,11 @@ import Foundation
 extension String: NameSpace { }
 
 public extension BaseWrapper where BaseType == String {
+    /// NSString.length
+    var nsCount: Int {
+        (self.base as NSString).length
+    }
+
     /// 获取从`start`开始到`end`结束的`Range<String.Index>`
     ///
     /// 如果`start`或`end`不在范围内直接返回nil
@@ -48,7 +53,7 @@ public extension BaseWrapper where BaseType == String {
         guard start >= 0, end >= start, end < self.base.count else {
             return nil
         }
-        return Range<String.Index>(NSRange(location: start, length: end - start + 1), in: self.base)
+        return Range<String.Index>(uncheckedBounds: (lower: self.base.index(self.base.startIndex, offsetBy: start), upper: self.base.index(self.base.startIndex, offsetBy: end)))
     }
 
     /// 获取从`start`开始到`end`结束的字符串
@@ -123,7 +128,7 @@ public extension BaseWrapper where BaseType == String {
         guard index >= 0, index < self.base.count else {
             return ""
         }
-        return "\(self.base[String.Index(utf16Offset: index, in: self.base)])"
+        return "\(self.base[self.base.index(self.base.startIndex, offsetBy: index)])"
     }
 
     /// 将字符串插入到`index`
@@ -149,7 +154,7 @@ public extension BaseWrapper where BaseType == String {
     ///   - end: 需要替换的字符串结束位置
     ///   - replacement: 替换字符串
     /// - Returns: 替换后的字符串
-    func replace(_ start: Int, to end: Int, with replacement: String) -> String {
+    func replacing(_ start: Int, to end: Int, with replacement: String) -> String {
         var res = self.base
         if let range = self.range(start, to: end) {
             res.replaceSubrange(range, with: replacement)
@@ -159,10 +164,20 @@ public extension BaseWrapper where BaseType == String {
 
     /// 字符串替换
     /// - Parameters:
+    ///   - start: 需要替换的字符串起始位置
+    ///   - end: 需要替换的字符串结束位置
+    ///   - replacement: 替换字符串
+    /// - Returns: 替换后的字符串
+    func replacing(_ start: Int, length count: Int, with replacement: String) -> String {
+        return self.replacing(start, to: start + count - 1, with: replacement)
+    }
+
+    /// 字符串替换
+    /// - Parameters:
     ///   - of: 需要替换的字符串
     ///   - replacement: 替换字符串
     /// - Returns: 替换后的字符串
-    func replace(_ of: String, with replacement: String) -> String {
+    func replacing(_ of: String, with replacement: String) -> String {
         return self.base.replacingOccurrences(of: of, with: replacement)
     }
 
@@ -218,11 +233,13 @@ public extension BaseWrapper where BaseType == String {
 }
 
 public extension BaseWrapper where BaseType == String {
-    var md5: String {
-        guard let digestData = self.base.data(using: .utf8)?.dvt.md5 else {
-            return ""
-        }
-        return digestData.map { String(format: "%02hhx", $0) }.joined().uppercased()
+    @available(iOS, introduced: 2.0, deprecated: 13.0, message: "md5已经被系统标记为不安全，请使用sha256")
+    var md5: String? {
+        self.base.data(using: .utf8)?.dvt.md5String
+    }
+
+    var sha256: String? {
+        self.base.data(using: .utf8)?.dvt.sha256String
     }
 }
 

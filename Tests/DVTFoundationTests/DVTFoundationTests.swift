@@ -81,11 +81,6 @@ final class DVTFoundationTests: XCTestCase {
         XCTAssertEqual(string.dvt.date(of: format), date)
     }
 
-    func testMD5() throws {
-        XCTAssertEqual("1234567890".dvt.md5, "E807F1FCF82D132F9BB018CA6738A19F")
-        XCTAssertEqual("".dvt.md5, "D41D8CD98F00B204E9800998ECF8427E")
-    }
-
     func testJSON() {
         let dict = """
         {"key":"value"}
