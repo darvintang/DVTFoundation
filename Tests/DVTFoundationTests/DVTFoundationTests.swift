@@ -16,7 +16,7 @@ final class DVTFoundationTests: XCTestCase {
         XCTAssertEqual(str.dvt[-1, length: -10], "")
         XCTAssertEqual(str.dvt[-1, length: 0], "")
         XCTAssertEqual(str.dvt[-1, length: 3], "012")
-        XCTAssertEqual(str.dvt[-1, length: 12], "0123456789")
+        XCTAssertEqual(str.dvt[-1, length: 10], "0123456789")
 
         XCTAssertEqual(str.dvt[1, length: -10], "")
         XCTAssertEqual(str.dvt[1, length: 0], "")
@@ -32,7 +32,7 @@ final class DVTFoundationTests: XCTestCase {
         XCTAssertEqual(str.dvt[-1, to: 0], "0")
         XCTAssertEqual(str.dvt[-1, to: 1], "01")
         XCTAssertEqual(str.dvt[-1, to: 2], "012")
-        XCTAssertEqual(str.dvt[-1, to: 12], "0123456789")
+        XCTAssertEqual(str.dvt[-1, to: 9], "0123456789")
 
         XCTAssertEqual(str.dvt[1, to: -2], "")
         XCTAssertEqual(str.dvt[1, to: 0], "")
@@ -57,8 +57,8 @@ final class DVTFoundationTests: XCTestCase {
         XCTAssertEqual(str.dvt[10, to: 1], "")
         XCTAssertEqual(str.dvt[10, to: 10], "")
         XCTAssertEqual(str.dvt[10, to: 12], "")
-        XCTAssertEqual("18112341234".dvt.replace(3, to: 6, with: "****"), "181****1234")
-        XCTAssertEqual(str.dvt.replace(0, to: 1, with: "**"), "**23456789")
+        XCTAssertEqual("18112341234".dvt.replacing(3, to: 6, with: "****"), "181****1234")
+        XCTAssertEqual(str.dvt.replacing(0, to: 1, with: "**"), "**23456789")
         XCTAssertEqual("123456789".dvt[2, to: "4"], "3")
     }
 

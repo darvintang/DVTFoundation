@@ -41,19 +41,19 @@ public extension BaseWrapper where BaseType == String {
         (self.base as NSString).length
     }
 
-    /// 获取从`start`开始到`end`结束的`Range<String.Index>`
+    /// 获取从`start`开始到`end`结束(包含)的`Range<String.Index>`
     ///
     /// 如果`start`或`end`不在范围内直接返回nil
     ///
     /// - Parameters:
     ///   - start: 开始的位置
-    ///   - end: 结束的位置
+    ///   - end: 结束的位置，包含
     /// - Returns: 返回结果
     func range(_ start: Int, to end: Int) -> Range<String.Index>? {
         guard start >= 0, end >= start, end < self.base.count else {
             return nil
         }
-        return Range<String.Index>(uncheckedBounds: (lower: self.base.index(self.base.startIndex, offsetBy: start), upper: self.base.index(self.base.startIndex, offsetBy: end)))
+        return Range<String.Index>(uncheckedBounds: (lower: self.base.index(self.base.startIndex, offsetBy: start), upper: self.base.index(self.base.startIndex, offsetBy: end + 1)))
     }
 
     /// 获取从`start`开始到`end`结束的字符串
@@ -65,7 +65,7 @@ public extension BaseWrapper where BaseType == String {
     ///
     /// - Parameters:
     ///   - start: 开始的位置
-    ///   - end: 结束的位置
+    ///   - end: 结束的位置，包含
     /// - Returns: 返回结果
     subscript(_ start: Int, to end: Int) -> String {
         guard end >= 0, end >= start, start < self.base.count else {
