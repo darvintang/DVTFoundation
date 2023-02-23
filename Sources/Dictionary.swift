@@ -37,14 +37,10 @@ public struct DictionarySpace<Key: Hashable, Value> {
     fileprivate var base: [Key: Value]
 }
 
-extension DictionarySpace {
-    public var childs: [(key: Key, value: Value)] {
-        return self.base.map({ ($0.key, $0.value) })
-    }
+public extension DictionarySpace {
+    var childs: [(key: Key, value: Value)] { return self.base.map { ($0.key, $0.value) } }
 }
 
-extension Dictionary {
-    public var dvt: DictionarySpace<Key, Value> {
-        DictionarySpace(base: self)
-    }
+public extension Dictionary {
+    var dvt: DictionarySpace<Key, Value> { DictionarySpace(base: self) }
 }

@@ -59,79 +59,64 @@ import Foundation
 ///     }
 /// 该段代码为多线程暴力测试示范，时间的精准性没测试
 open class GCDTimer {
-    private var mutex: pthread_mutex_t
-    /// 计时器状态
-    public private(set) var status: Status = .un
-
-    private let queue: DispatchQueue
-
-    private let deadline: DispatchTime
-    /// 时间间隔
-    public let interval: DispatchTimeInterval
-    /// 计时器注册时执行的任务
-    public var registrationHandler: (() -> Void)?
-    /// 计时器任务
-    private let workItem: DispatchWorkItem
-    /// 计时器取消时执行的任务
-    public var cancelHandler: (() -> Void)?
-
-    private var source: DispatchSourceTimer?
-
-    public enum Status {
-        case un, inited, activate, suspend, cancel
-    }
-
+    // MARK: Lifecycle
     /// 初始化一个计时器
     /// - Parameters:
     ///   - queue: 计时器任务执行的队列
-    ///   - deadline: 延迟时间
+    ///   - delay: 延迟时间
     ///   - interval: 时间间隔，秒
     ///   - activate: 是否自动开启
-    ///   - workItem: 任务
-    public convenience init(queue: DispatchQueue = .main, deadline: DispatchTime = .now(), repeating interval: Double, auto activate: Bool = true, workItem: DispatchWorkItem) {
+    ///   - work: 任务
+    public convenience init(queue: DispatchQueue = .main, delay time: DispatchTime = .now(), repeating interval: Double,
+                            auto activate: Bool = true, work item: DispatchWorkItem) {
         let milliseconds = Int(interval * 1000)
-        let Tinterval: DispatchTimeInterval = milliseconds <= 0 ? .never : .milliseconds(milliseconds)
-        self.init(queue: queue, deadline: deadline, repeating: Tinterval, auto: activate, workItem: workItem)
+        let tempInterval: DispatchTimeInterval = milliseconds <= 0 ? .never : .milliseconds(milliseconds)
+        self.init(queue: queue, delay: time, repeating: tempInterval, auto: activate, work: item)
     }
 
     /// 初始化一个计时器
     /// - Parameters:
     ///   - queue: 计时器任务执行的队列
-    ///   - deadline: 延迟时间
+    ///   - delay: 延迟时间
     ///   - interval: 时间间隔，秒
     ///   - activate: 是否自动开启
-    ///   - eventHandler: 任务
-    public convenience init(queue: DispatchQueue = .main, deadline: DispatchTime = .now(), repeating interval: Double, auto activate: Bool = true, eventHandler: @escaping () -> Void) {
+    ///   - event: 任务
+    public convenience init(queue: DispatchQueue = .main, delay time: DispatchTime = .now(), repeating interval: Double,
+                            auto activate: Bool = true, event handler: @escaping () -> Void) {
         let milliseconds = Int(interval * 1000)
         let Tinterval: DispatchTimeInterval = milliseconds <= 0 ? .never : .milliseconds(milliseconds)
-        self.init(queue: queue, deadline: deadline, repeating: Tinterval, auto: activate, eventHandler: eventHandler)
+        self.init(queue: queue, delay: time, repeating: Tinterval, auto: activate, event: handler)
     }
 
     /// 初始化一个计时器
     /// - Parameters:
     ///   - queue: 计时器任务执行的队列
-    ///   - deadline: 延迟时间
+    ///   - delay: 延迟时间
     ///   - interval: 时间间隔，DispatchTimeInterval类型
     ///   - activate: 是否自动开启
-    ///   - eventHandler: 任务
-    public convenience init(queue: DispatchQueue = .main, deadline: DispatchTime = .now(), repeating interval: DispatchTimeInterval = .never, auto activate: Bool = true, eventHandler: @escaping () -> Void) {
-        let item = DispatchWorkItem(block: eventHandler)
-        self.init(queue: queue, deadline: deadline, repeating: interval, auto: activate, workItem: item)
+    ///   - event: 任务
+    public convenience init(queue: DispatchQueue = .main, delay time: DispatchTime = .now(),
+                            repeating interval: DispatchTimeInterval = .never, auto activate: Bool = true,
+                            event handler: @escaping () -> Void) {
+        let item = DispatchWorkItem(block: handler)
+        self.init(queue: queue, delay: time, repeating: interval, auto: activate, work: item)
     }
 
     /// 初始化一个计时器
     /// - Parameters:
     ///   - queue: 计时器任务执行的队列
-    ///   - deadline: 延迟时间
+    ///   - delay: 延迟时间
     ///   - interval: 时间间隔，DispatchTimeInterval类型
     ///   - activate: 是否自动开启
-    ///   - workItem: 任务
-    public init(queue: DispatchQueue = .main, deadline: DispatchTime = .now(), repeating interval: DispatchTimeInterval = .never, auto activate: Bool = true, workItem: DispatchWorkItem) {
+    ///   - work: 任务
+    public init(queue: DispatchQueue = .main, delay time: DispatchTime = .now(),
+                repeating interval: DispatchTimeInterval = .never, auto activate: Bool = true,
+                work item: DispatchWorkItem) {
         self.queue = queue
         self.interval = interval
-        self.workItem = workItem
+        self.workItem = item
         self.mutex = pthread_mutex_t()
-        self.deadline = deadline
+        self.delay = time
         var attr = pthread_mutexattr_t()
         pthread_mutexattr_init(&attr)
         pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE)
@@ -139,6 +124,28 @@ open class GCDTimer {
         pthread_mutexattr_destroy(&attr)
         self.reload(activate)
     }
+
+    deinit {
+        self.activate()
+        self.cancel()
+        if self.source != nil {
+            self.source = nil
+        }
+        pthread_mutex_destroy(&self.mutex)
+    }
+
+    // MARK: Public
+    public enum Status { case un, inited, activate, suspend, cancel }
+
+    /// 计时器状态
+    public private(set) var status: Status = .un
+
+    /// 时间间隔
+    public let interval: DispatchTimeInterval
+    /// 计时器注册时执行的任务
+    public var registrationHandler: (() -> Void)?
+    /// 计时器取消时执行的任务
+    public var cancelHandler: (() -> Void)?
 
     /// 启动计时器，只有计时器在`inited`状态有效
     public func activate() {
@@ -218,7 +225,8 @@ open class GCDTimer {
         }
 
         self.source = DispatchSource.makeTimerSource(flags: [.strict], queue: self.queue)
-        self.source?.schedule(deadline: self.status == .cancel ? .now() : self.deadline, repeating: self.interval, leeway: .nanoseconds(0))
+        self.source?.schedule(deadline: self.status == .cancel ? .now() : self.delay, repeating: self.interval,
+                              leeway: .nanoseconds(0))
 
         self.source?.setEventHandler(handler: self.workItem)
         self.source?.setRegistrationHandler { [weak self] in
@@ -233,32 +241,32 @@ open class GCDTimer {
         }
     }
 
-    deinit {
-        self.activate()
-        self.cancel()
-        if self.source != nil {
-            self.source = nil
-        }
-        pthread_mutex_destroy(&self.mutex)
-    }
+    // MARK: Private
+    private var mutex: pthread_mutex_t
+    private let queue: DispatchQueue
+
+    private let delay: DispatchTime
+    /// 计时器任务
+    private let workItem: DispatchWorkItem
+    private var source: DispatchSourceTimer?
 }
 
-extension GCDTimer {
+public extension GCDTimer {
     /// 初始化一个计时器
     /// - Parameters:
     ///   - queue: 计时器任务执行的队列
-    ///   - deadline: 延迟时间, 秒
-    ///   - workItem: 任务
-    public convenience init(queue: DispatchQueue = .main, deadline: TimeInterval, workItem: DispatchWorkItem) {
-        self.init(queue: queue, deadline: .now() + deadline, repeating: .never, auto: true, workItem: workItem)
+    ///   - delay: 延迟时间, 秒
+    ///   - work: 任务
+    convenience init(queue: DispatchQueue = .main, delay time: TimeInterval, work item: DispatchWorkItem) {
+        self.init(queue: queue, delay: .now() + time, repeating: .never, auto: true, work: item)
     }
 
     /// 初始化一个计时器
     /// - Parameters:
     ///   - queue: 计时器任务执行的队列
-    ///   - deadline: 延迟时间, 秒
-    ///   - eventHandler: 任务
-    public convenience init(queue: DispatchQueue = .main, deadline: TimeInterval, eventHandler: @escaping () -> Void) {
-        self.init(queue: queue, deadline: .now() + deadline, repeating: .never, auto: true, eventHandler: eventHandler)
+    ///   - delay: 延迟时间, 秒
+    ///   - event: 任务
+    convenience init(queue: DispatchQueue = .main, delay time: TimeInterval, event handler: @escaping () -> Void) {
+        self.init(queue: queue, delay: .now() + time, repeating: .never, auto: true, event: handler)
     }
 }

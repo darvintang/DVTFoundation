@@ -34,19 +34,13 @@
 import Foundation
 
 public extension Array {
-    @discardableResult
-    mutating func dvt_remove(_ element: Element) -> Element? where Element: Equatable {
-        if let index = self.firstIndex(of: element) {
-            return self.remove(at: index)
-        }
+    @discardableResult mutating func dvt_remove(_ element: Element) -> Element? where Element: Equatable {
+        if let index = self.firstIndex(of: element) { return self.remove(at: index) }
         return nil
     }
 
-    @discardableResult
-    mutating func dvt_remove(where element: (Element) -> Bool) -> Element? {
-        if let index = self.firstIndex(where: element) {
-            return self.remove(at: index)
-        }
+    @discardableResult mutating func dvt_remove(where element: (Element) -> Bool) -> Element? {
+        if let index = self.firstIndex(where: element) { return self.remove(at: index) }
         return nil
     }
 }
@@ -55,11 +49,8 @@ public struct ArraySpace<Element> {
     fileprivate var base: [Element]
 }
 
-extension ArraySpace {
-}
+extension ArraySpace { }
 
-extension Array {
-    public var dvt: ArraySpace<Element> {
-        ArraySpace(base: self)
-    }
+public extension Array {
+    var dvt: ArraySpace<Element> { ArraySpace(base: self) }
 }

@@ -33,23 +33,18 @@
 
 import Foundation
 
-extension Bundle: NameSpace {
-}
+extension Bundle: NameSpace { }
 
 public extension BaseWrapper where BaseType == Bundle {
-    var version: String {
-        (self.base.infoDictionary?["CFBundleShortVersionString"] as? String) ?? ""
-    }
+    /// CFBundleShortVersionString
+    var version: String { (self.base.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "" }
 
-    var build: String {
-        (self.base.infoDictionary?["CFBundleVersion"] as? String) ?? ""
-    }
+    /// CFBundleVersion
+    var build: String { (self.base.infoDictionary?["CFBundleVersion"] as? String) ?? "" }
 
-    var name: String {
-        (self.base.infoDictionary?["CFBundleDisplayName"] as? String) ?? ""
-    }
+    /// CFBundleDisplayName
+    var name: String { (self.base.infoDictionary?["CFBundleDisplayName"] as? String) ?? "" }
 
-    var bundleId: String {
-        (self.base.infoDictionary?["CFBundleIdentifier"] as? String) ?? ""
-    }
+    /// CFBundleIdentifier
+    var bundleID: String { (self.base.infoDictionary?["CFBundleIdentifier"] as? String) ?? "" }
 }

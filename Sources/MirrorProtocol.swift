@@ -37,8 +37,8 @@ public protocol MirrorProtocol {
     var jsonString: String? { get }
 }
 
-extension MirrorProtocol {
-    public var mirrorValue: Any? {
+public extension MirrorProtocol {
+    var mirrorValue: Any? {
         var dict: [String: Any] = [:]
         Mirror(reflecting: self).children.forEach { child in
             if let key = child.label {
@@ -52,7 +52,7 @@ extension MirrorProtocol {
         return dict
     }
 
-    public var jsonString: String? {
+    var jsonString: String? {
         if let value = self.mirrorValue, let data = try? JSONSerialization.data(withJSONObject: value, options: [.sortedKeys, .fragmentsAllowed]) {
             return String(data: data, encoding: .utf8)?.dvt.replacing("\\/", with: "/")
         }
@@ -63,13 +63,9 @@ extension MirrorProtocol {
 extension Array: MirrorProtocol {
     public var mirrorValue: Any? {
         self.compactMap { e -> Any? in
-            if let v = e as? MirrorProtocol {
-                return v.mirrorValue
-            } else if JSONSerialization.isValidJSONObject(e) {
-                return e
-            } else {
-                return nil
-            }
+            if let v = e as? MirrorProtocol { return v.mirrorValue }
+            else if JSONSerialization.isValidJSONObject(e) { return e }
+            else { return nil }
         }
     }
 }
@@ -79,11 +75,8 @@ extension Dictionary: MirrorProtocol {
         var dict: [String: Any] = [:]
         self.forEach { (key: Hashable, value: Value) in
             dict["\(key)"] = value
-            if let v = value as? MirrorProtocol {
-                dict["\(key)"] = v.mirrorValue
-            } else if JSONSerialization.isValidJSONObject(value) {
-                dict["\(key)"] = value
-            }
+            if let v = value as? MirrorProtocol { dict["\(key)"] = v.mirrorValue }
+            else if JSONSerialization.isValidJSONObject(value) { dict["\(key)"] = value }
         }
         return dict
     }
@@ -92,80 +85,55 @@ extension Dictionary: MirrorProtocol {
 extension Set: MirrorProtocol {
     public var mirrorValue: Any? {
         self.compactMap { e -> Any? in
-            if let v = e as? MirrorProtocol {
-                return v.mirrorValue
-            } else if JSONSerialization.isValidJSONObject(e) {
-                return e
-            } else {
-                return nil
-            }
+            if let v = e as? MirrorProtocol { return v.mirrorValue }
+            else if JSONSerialization.isValidJSONObject(e) { return e }
+            else { return nil }
         }
     }
 }
 
 extension NSObject: MirrorProtocol {
+    // MARK: Public
     public var mirrorValue: Any? {
-        if let list = self as? [Any] {
-            return list.mirrorValue
-        }
+        if let list = self as? [Any] { return list.mirrorValue }
 
-        if let dict = self as? [String: Any] {
-            return dict.mirrorValue
-        }
+        if let dict = self as? [String: Any] { return dict.mirrorValue }
 
         if let set = self as? NSSet {
             return set.compactMap { e -> Any? in
-                if let v = e as? MirrorProtocol {
-                    return v.mirrorValue
-                } else if JSONSerialization.isValidJSONObject(e) {
-                    return e
-                } else {
-                    return nil
-                }
+                if let v = e as? MirrorProtocol { return v.mirrorValue }
+                else if JSONSerialization.isValidJSONObject(e) { return e }
+                else { return nil }
             }
         }
 
-        if (self as? String) != nil || (self as? NSNumber) != nil {
-            return self
-        }
+        if (self as? String) != nil || (self as? NSNumber) != nil { return self }
 
         let propertys = self.propertysNames()
         var dict: [String: Any] = [:]
 
-        for key in propertys {
-            dict[key] = self.value(forKey: key)
-        }
+        for key in propertys { dict[key] = self.value(forKey: key) }
 
         Mirror(reflecting: self).children.forEach { child in
             if let key = child.label {
-                if let value = child.value as? MirrorProtocol {
-                    dict[key] = value.mirrorValue
-                } else if JSONSerialization.isValidJSONObject(child.value) {
-                    dict[key] = child.value
-                }
+                if let value = child.value as? MirrorProtocol { dict[key] = value.mirrorValue }
+                else if JSONSerialization.isValidJSONObject(child.value) { dict[key] = child.value }
             }
         }
         return dict
     }
 
-    private func propertysNames() -> [String] {
-        return Self.propertysNames() ?? []
-    }
-
+    // MARK: Private
     private static var cacheKeyDict: [String: [String]] = [:]
 
     private static func propertysNames() -> [String]? {
         let key = "\(self)"
-        if let list = self.cacheKeyDict[key] {
-            return list
-        }
+        if let list = self.cacheKeyDict[key] { return list }
 
         var propertyNames: [String] = []
         let cls: AnyClass = self
 
-        if cls == NSObject.self {
-            return nil
-        }
+        if cls == NSObject.self { return nil }
 
         var count: UInt32 = 0
         if let properties = class_copyPropertyList(cls, &count) {
@@ -184,38 +152,37 @@ extension NSObject: MirrorProtocol {
         self.cacheKeyDict[key] = list
         return list
     }
+
+    private func propertysNames() -> [String] {
+        return Self.propertysNames() ?? []
+    }
 }
 
 extension URL: MirrorProtocol {
-    public var mirrorValue: Any? {
-        self.absoluteString
-    }
+    public var mirrorValue: Any? { self.absoluteString }
 }
 
-public protocol ExpressibleAllLiteral: MirrorProtocol {
+public protocol ExpressibleAllLiteral: MirrorProtocol { }
+
+public extension ExpressibleAllLiteral {
+    var mirrorValue: Any? { self }
 }
 
-extension ExpressibleAllLiteral {
-    public var mirrorValue: Any? {
-        self
-    }
-}
+extension Int: ExpressibleAllLiteral { }
+extension Int8: ExpressibleAllLiteral { }
+extension Int16: ExpressibleAllLiteral { }
+extension Int32: ExpressibleAllLiteral { }
+extension Int64: ExpressibleAllLiteral { }
 
-extension Int: ExpressibleAllLiteral {}
-extension Int8: ExpressibleAllLiteral {}
-extension Int16: ExpressibleAllLiteral {}
-extension Int32: ExpressibleAllLiteral {}
-extension Int64: ExpressibleAllLiteral {}
+extension Float: ExpressibleAllLiteral { }
+extension CGFloat: ExpressibleAllLiteral { }
 
-extension Float: ExpressibleAllLiteral {}
-extension CGFloat: ExpressibleAllLiteral {}
+extension Double: ExpressibleAllLiteral { }
 
-extension Double: ExpressibleAllLiteral {}
+extension Decimal: ExpressibleAllLiteral { }
 
-extension Decimal: ExpressibleAllLiteral {}
+extension String: ExpressibleAllLiteral { }
+extension Substring: ExpressibleAllLiteral { }
+extension Character: ExpressibleAllLiteral { }
 
-extension String: ExpressibleAllLiteral {}
-extension Substring: ExpressibleAllLiteral {}
-extension Character: ExpressibleAllLiteral {}
-
-extension Bool: ExpressibleAllLiteral {}
+extension Bool: ExpressibleAllLiteral { }

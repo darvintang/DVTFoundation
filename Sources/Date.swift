@@ -44,9 +44,7 @@ public extension DateFormatter {
 extension Date: NameSpace { }
 
 public extension BaseWrapper where BaseType == Date {
-    func string(of format: String = "yyyy-MM-dd") -> String {
-        DateFormatter(dvt: format).string(from: self.base)
-    }
+    func string(of format: String = "yyyy-MM-dd") -> String { DateFormatter(dvt: format).string(from: self.base) }
 
     func addYear(_ number: Int) -> Date {
         return Calendar(identifier: .gregorian).date(byAdding: .year, value: number, to: self.base) ?? self.base.addingTimeInterval(3600 * 24 * 365)
@@ -66,7 +64,5 @@ public extension BaseWrapper where BaseType == Date {
 }
 
 public extension BaseWrapper where BaseType == String {
-    func date(of format: String = "yyyy-MM-dd") -> Date? {
-        DateFormatter(dvt: format).date(from: self.base)
-    }
+    func date(of format: String = "yyyy-MM-dd") -> Date? { DateFormatter(dvt: format).date(from: self.base) }
 }

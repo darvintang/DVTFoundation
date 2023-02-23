@@ -34,44 +34,42 @@
 import Foundation
 
 public struct JSONBaseWrapper<BaseJSONType> {
+    // MARK: Lifecycle
+    public init(_ value: BaseJSONType) { self.base = value }
+
+    // MARK: Public
     public var base: BaseJSONType
-    public init(_ value: BaseJSONType) {
-        self.base = value
-    }
 }
 
 public protocol JSONNameSpace {
     associatedtype BaseJSONType
-    var dvtJson: BaseJSONType { set get }
     static var dvtJson: BaseJSONType.Type { get }
+
+    var dvtJson: BaseJSONType { set get }
 }
 
 public extension JSONNameSpace {
-    var dvtJson: JSONBaseWrapper<Self> { set {} get { JSONBaseWrapper(self) }}
     static var dvtJson: JSONBaseWrapper<Self>.Type { JSONBaseWrapper.self }
+
+    var dvtJson: JSONBaseWrapper<Self> { set { } get { JSONBaseWrapper(self) }}
 }
 
-extension JSONBaseWrapper where BaseJSONType: MirrorProtocol {
-    public var json: Any? {
-        self.base.mirrorValue
-    }
+public extension JSONBaseWrapper where BaseJSONType: MirrorProtocol {
+    var json: Any? { self.base.mirrorValue }
 
-    public var string: String? {
-        self.base.jsonString
-    }
+    var string: String? { self.base.jsonString }
 }
 
 extension NSObject: JSONNameSpace { }
-extension Array: JSONNameSpace {}
-extension Dictionary: JSONNameSpace {}
-extension Set: JSONNameSpace {}
-extension String: JSONNameSpace {}
+extension Array: JSONNameSpace { }
+extension Dictionary: JSONNameSpace { }
+extension Set: JSONNameSpace { }
+extension String: JSONNameSpace { }
 
-extension JSONBaseWrapper where BaseJSONType == String {
-    public var json: Any? {
-        if let data = self.base.data(using: .utf8) {
-            return try? JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
-        }
+public extension JSONBaseWrapper where BaseJSONType == String {
+    var json: Any? {
+        if let data = self.base
+            .data(using: .utf8) { return try? JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) }
         return nil
     }
 }

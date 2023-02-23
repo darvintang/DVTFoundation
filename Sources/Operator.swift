@@ -35,68 +35,46 @@ import Foundation
 
 public extension Double {
     static func += <T: FixedWidthInteger>(left: inout Double, rhs: T) {
-        if let r = Double(exactly: rhs) {
-            left = left + r
-        }
+        if let r = Double(exactly: rhs) { left = left + r }
     }
 
     static func -= <T: FixedWidthInteger>(left: inout Double, rhs: T) {
-        if let r = Double(exactly: rhs) {
-            left = left - r
-        }
+        if let r = Double(exactly: rhs) { left = left - r }
     }
 
     static func += <T: BinaryFloatingPoint>(left: inout Double, rhs: T) {
-        if T.self is Double.Type {
-            left = left - (rhs as! Double)
-        } else if let r = Double(exactly: rhs) {
-            left = left + r
-        }
+        if T.self is Double.Type { left = left - (rhs as! Double) }
+        else if let r = Double(exactly: rhs) { left = left + r }
     }
 
     static func -= <T: BinaryFloatingPoint>(left: inout Double, rhs: T) {
-        if T.self is Double.Type {
-            left = left - (rhs as! Double)
-        } else if let r = Double(exactly: rhs) {
-            left = left - r
-        }
+        if T.self is Double.Type { left = left - (rhs as! Double) }
+        else if let r = Double(exactly: rhs) { left = left - r }
     }
 }
 
 public extension Float {
     static func += <T: FixedWidthInteger>(left: inout Float, rhs: T) {
-        if let r = Float(exactly: rhs) {
-            left = left + r
-        }
+        if let r = Float(exactly: rhs) { left = left + r }
     }
 
     static func -= <T: FixedWidthInteger>(left: inout Float, rhs: T) {
-        if let r = Float(exactly: rhs) {
-            left = left - r
-        }
+        if let r = Float(exactly: rhs) { left = left - r }
     }
 
     static func += <T: BinaryFloatingPoint>(left: inout Float, rhs: T) {
-        if T.self is Float.Type {
-            left = left + (rhs as! Float)
-        } else if let r = Float(exactly: rhs) {
-            left = left + r
-        }
+        if T.self is Float.Type { left = left + (rhs as! Float) }
+        else if let r = Float(exactly: rhs) { left = left + r }
     }
 
     static func -= <T: BinaryFloatingPoint>(left: inout Float, rhs: T) {
-        if T.self is Float.Type {
-            left = left - (rhs as! Float)
-        } else if let r = Float(exactly: rhs) {
-            left = left - r
-        }
+        if T.self is Float.Type { left = left - (rhs as! Float) }
+        else if let r = Float(exactly: rhs) { left = left - r }
     }
 }
 
 public extension Dictionary where Key == String, Value == Any {
     static func += (left: inout [String: Any], right: [String: Any]?) {
-        right?.forEach { key, value in
-            left[key] = value
-        }
+        right?.forEach { key, value in left[key] = value }
     }
 }

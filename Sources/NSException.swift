@@ -33,40 +33,30 @@
 
 import Foundation
 
-fileprivate typealias NSExceptionrRaiseCompletionBlock = (_ exception: NSException) -> Void
+private extension NSException {
+    typealias NSExceptionrRaiseCompletionBlock = (_ exception: NSException) -> Void
 
-fileprivate extension NSException {
-    static var NSException_Monitor_Key: UInt8 = 0
+    static var NSException_DVTFoundation_raiseCompletionBlock_key: UInt8 = 0
+    static var NSException_DVTFoundation_Swizzleed_flag = false
+
     static var raiseCompletionBlock: NSExceptionrRaiseCompletionBlock? {
-        set {
-            objc_setAssociatedObject(self, &self.NSException_Monitor_Key, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
-        }
-        get {
-            objc_getAssociatedObject(self, &self.NSException_Monitor_Key) as? NSExceptionrRaiseCompletionBlock
-        }
+        set { objc_setAssociatedObject(self, &self.NSException_DVTFoundation_raiseCompletionBlock_key, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
+        get { objc_getAssociatedObject(self, &self.NSException_DVTFoundation_raiseCompletionBlock_key) as? NSExceptionrRaiseCompletionBlock }
     }
 
     static var shutRaise = false {
-        didSet {
-            self.swizzleed()
-        }
+        didSet { self.foundation_swizzleed() }
     }
 
-    static var NSException_DVTFoundation_Swizzleed = false
-    static func swizzleed() {
-        if self.NSException_DVTFoundation_Swizzleed {
-            return
-        }
-        self.swizzleInstanceSelector(NSSelectorFromString("raise"), swizzle: #selector(dvt_raise))
-        self.NSException_DVTFoundation_Swizzleed = true
+    static func foundation_swizzleed() {
+        if self.NSException_DVTFoundation_Swizzleed_flag { return }
+        defer { self.NSException_DVTFoundation_Swizzleed_flag = true }
+        self.dvt_swizzleInstanceSelector(NSSelectorFromString("raise"), swizzle: #selector(dvt_foundation_raise))
     }
 
-    @objc func dvt_raise() {
-        if !Self.shutRaise {
-            self.dvt_raise()
-        } else {
-            Self.raiseCompletionBlock?(self)
-        }
+    @objc func dvt_foundation_raise() {
+        if !Self.shutRaise { self.dvt_foundation_raise() }
+        else { Self.raiseCompletionBlock?(self) }
     }
 }
 
@@ -74,10 +64,14 @@ extension NSException: NameSpace { }
 
 public extension BaseWrapper where BaseType: NSException {
     /// 拦截系统中断，可以用于UIKit操作私有属性的时候异常拦截
-    static func ignoreHandler(_ handler: () -> Void, completion: ((_ exception: NSException) -> Void)? = nil) {
+    ///
+    /// completion并不是一定会执行，如果多个地方同时设置completion就会出现不执行的情况
+    static func ignore(_ handler: () -> Void, completion: ((_ exception: NSException) -> Void)? = nil) {
         NSException.shutRaise = true
-        NSException.raiseCompletionBlock = completion
+        if completion != nil { NSException.raiseCompletionBlock = completion }
         handler()
         NSException.shutRaise = false
+        // 如果0.1秒之后还没有报异常就清理掉
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { NSException.raiseCompletionBlock = nil }
     }
 }

@@ -31,10 +31,10 @@
 
  */
 
-import CommonCrypto
 import Foundation
+import CommonCrypto
 
-extension Data: NameSpace {}
+extension Data: NameSpace { }
 
 public extension BaseWrapper where BaseType == Data {
     @available(iOS, introduced: 2.0, deprecated: 13.0, message: "md5已经被系统标记为不安全，请使用sha256")
@@ -73,15 +73,9 @@ public extension BaseWrapper where BaseType == Data {
         return digestData
     }
 
-    var sha256String: String {
-        self.sha256.map { String(format: "%02hhx", $0) }.joined().uppercased()
-    }
+    var sha256String: String { self.sha256.map { String(format: "%02hhx", $0) }.joined().uppercased() }
 
-    func string(_ encoding: String.Encoding = .utf8) -> String? {
-        String(data: self.base, encoding: encoding)
-    }
+    var utf8String: String? { self.string() }
 
-    var utf8String: String? {
-        self.string()
-    }
+    func string(_ encoding: String.Encoding = .utf8) -> String? { String(data: self.base, encoding: encoding) }
 }

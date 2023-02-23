@@ -37,8 +37,10 @@ extension String: NameSpace { }
 
 public extension BaseWrapper where BaseType == String {
     /// NSString.length
-    var nsCount: Int {
-        (self.base as NSString).length
+    var nsCount: Int { (self.base as NSString).length }
+
+    var isPhone: Bool {
+        self.regularValidate("^1(3\\d|4[5-9]|5[0-35-9]|6[2567]|7[0-8]|8\\d|9[0-35-9])\\d{8}$")
     }
 
     /// 获取从`start`开始到`end`结束(包含)的`Range<String.Index>`
@@ -50,10 +52,9 @@ public extension BaseWrapper where BaseType == String {
     ///   - end: 结束的位置，包含
     /// - Returns: 返回结果
     func range(_ start: Int, to end: Int) -> Range<String.Index>? {
-        guard start >= 0, end >= start, end < self.base.count else {
-            return nil
-        }
-        return Range<String.Index>(uncheckedBounds: (lower: self.base.index(self.base.startIndex, offsetBy: start), upper: self.base.index(self.base.startIndex, offsetBy: end + 1)))
+        guard start >= 0, end >= start, end < self.base.count else { return nil }
+        return Range<String.Index>(uncheckedBounds: (lower: self.base.index(self.base.startIndex, offsetBy: start),
+                                                     upper: self.base.index(self.base.startIndex, offsetBy: end + 1)))
     }
 
     /// 获取从`start`开始到`end`结束的字符串
@@ -68,14 +69,10 @@ public extension BaseWrapper where BaseType == String {
     ///   - end: 结束的位置，包含
     /// - Returns: 返回结果
     subscript(_ start: Int, to end: Int) -> String {
-        guard end >= 0, end >= start, start < self.base.count else {
-            return ""
-        }
+        guard end >= 0, end >= start, start < self.base.count else { return "" }
         let newStart = max(0, start)
         let newEnd = min(end, self.base.count - 1)
-        guard newEnd >= newStart, let range = self.range(newStart, to: newEnd), !range.isEmpty else {
-            return ""
-        }
+        guard newEnd >= newStart, let range = self.range(newStart, to: newEnd), !range.isEmpty else { return "" }
         return "\(self.base[range])"
     }
 
@@ -92,9 +89,7 @@ public extension BaseWrapper where BaseType == String {
     subscript(_ start: Int, to end: String) -> String {
         let string = self.base.components(separatedBy: end).first ?? self.base
         let length = max(0, string.count - start)
-        if length == 0 {
-            return ""
-        }
+        if length == 0 { return "" }
         return "\(string.suffix(length))"
     }
 
@@ -108,9 +103,7 @@ public extension BaseWrapper where BaseType == String {
     ///   - count: 长度
     /// - Returns: 返回结果
     subscript(_ start: Int, length count: Int) -> String {
-        guard count > 0, start < self.base.count else {
-            return ""
-        }
+        guard count > 0, start < self.base.count else { return "" }
         let newStart = max(0, start)
         return self[newStart, to: newStart + count - 1]
     }
@@ -125,9 +118,7 @@ public extension BaseWrapper where BaseType == String {
     /// - Returns: 返回结果
     /// - Complexity: O(*n*)
     subscript(_ index: Int) -> String {
-        guard index >= 0, index < self.base.count else {
-            return ""
-        }
+        guard index >= 0, index < self.base.count else { return "" }
         return "\(self.base[self.base.index(self.base.startIndex, offsetBy: index)])"
     }
 
@@ -156,9 +147,7 @@ public extension BaseWrapper where BaseType == String {
     /// - Returns: 替换后的字符串
     func replacing(_ start: Int, to end: Int, with replacement: String) -> String {
         var res = self.base
-        if let range = self.range(start, to: end) {
-            res.replaceSubrange(range, with: replacement)
-        }
+        if let range = self.range(start, to: end) { res.replaceSubrange(range, with: replacement) }
         return res
     }
 
@@ -169,7 +158,7 @@ public extension BaseWrapper where BaseType == String {
     ///   - replacement: 替换字符串
     /// - Returns: 替换后的字符串
     func replacing(_ start: Int, length count: Int, with replacement: String) -> String {
-        return self.replacing(start, to: start + count - 1, with: replacement)
+        self.replacing(start, to: start + count - 1, with: replacement)
     }
 
     /// 字符串替换
@@ -178,24 +167,20 @@ public extension BaseWrapper where BaseType == String {
     ///   - replacement: 替换字符串
     /// - Returns: 替换后的字符串
     func replacing(_ of: String, with replacement: String) -> String {
-        return self.base.replacingOccurrences(of: of, with: replacement)
+        self.base.replacingOccurrences(of: of, with: replacement)
     }
 
     /// 对字符串进行URLQuery编码，可以自己设定额外的忽略字符
     func urlQueryEncoded(in characters: String = "!$&'()*+,;=:#[]@") -> String {
         let characters = CharacterSet.urlQueryAllowed.intersection(CharacterSet(charactersIn: characters))
-        let encodeUrlString = self.base.addingPercentEncoding(withAllowedCharacters: characters)
-        return encodeUrlString ?? ""
+        let encodeURLString = self.base.addingPercentEncoding(withAllowedCharacters: characters)
+        return encodeURLString ?? ""
     }
 
     /// 正则校验
     func regularValidate(_ regular: String) -> Bool {
         let predicate = NSPredicate(format: "SELF MATCHES %@", regular)
         return predicate.evaluate(with: self.base)
-    }
-
-    func isPhone() -> Bool {
-        self.regularValidate("^1(3\\d|4[5-9]|5[0-35-9]|6[2567]|7[0-8]|8\\d|9[0-35-9])\\d{8}$")
     }
 }
 
@@ -210,54 +195,38 @@ public extension BaseWrapper where BaseType == String {
 
     var reverse: String {
         var resstr = ""
-        self.base.forEach { c in
-            resstr = "\(c)" + resstr
-        }
+        self.base.forEach { c in resstr = "\(c)" + resstr }
         return resstr
     }
 }
 
 public extension BaseWrapper where BaseType == String {
     /// base64编码，编码失败返回nil
-    var base64: String? {
-        self.base.data(using: .utf8)?.base64EncodedString()
-    }
+    var base64: String? { self.base.data(using: .utf8)?.base64EncodedString() }
 
     /// base64解码，解码失败返回nil
     var string: String? {
-        guard let data = self.base64Data else {
-            return nil
-        }
+        guard let data = self.base64Data else { return nil }
         return String(data: data, encoding: .utf8)
     }
 }
 
 public extension BaseWrapper where BaseType == String {
     @available(iOS, introduced: 2.0, deprecated: 13.0, message: "md5已经被系统标记为不安全，请使用sha256")
-    var md5: String? {
-        self.base.data(using: .utf8)?.dvt.md5String
-    }
+    var md5: String? { self.base.data(using: .utf8)?.dvt.md5String }
 
-    var sha256: String? {
-        self.base.data(using: .utf8)?.dvt.sha256String
-    }
+    var sha256: String? { self.base.data(using: .utf8)?.dvt.sha256String }
 }
 
 public extension BaseWrapper where BaseType == String {
-    var base64Data: Data? {
-        Data(base64Encoded: self.base)
-    }
+    var base64Data: Data? { Data(base64Encoded: self.base) }
 }
 
 public extension BaseWrapper where BaseType == String {
-    var url: URL? {
-        URL(string: self.base)
-    }
+    var url: URL? { URL(string: self.base) }
 }
 
 extension Substring: NameSpace { }
 public extension BaseWrapper where BaseType == Substring {
-    var string: String {
-        String(self.base)
-    }
+    var string: String { String(self.base) }
 }

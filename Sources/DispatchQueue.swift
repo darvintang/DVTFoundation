@@ -33,28 +33,24 @@
 
 import Foundation
 
-extension DispatchQueue: NameSpace {}
+extension DispatchQueue: NameSpace { }
 
 private var DispatchQueue_onceIdentifier = [String]()
 
 public extension BaseWrapper where BaseType == DispatchQueue {
     static func once(_ identifier: String = "\(#file):\(#function):\(#line)", block: () -> Void) {
         objc_sync_enter(self)
-        defer {
-            objc_sync_exit(self)
-        }
-        if DispatchQueue_onceIdentifier.contains(identifier) {
-            return
-        }
+        defer { objc_sync_exit(self) }
+        if DispatchQueue_onceIdentifier.contains(identifier) { return }
         DispatchQueue_onceIdentifier.append(identifier)
         block()
     }
 
-    @discardableResult static func mainAfter(deadline time: Double, block: @escaping () -> Void) -> DispatchWorkItem {
-        return DispatchQueue.main.dvt.after(deadline: time, block: block)
+    @discardableResult static func mainAfter(delay time: Double, block: @escaping () -> Void) -> DispatchWorkItem {
+        return DispatchQueue.main.dvt.after(delay: time, block: block)
     }
 
-    @discardableResult func after(deadline time: Double, block: @escaping () -> Void) -> DispatchWorkItem {
+    @discardableResult func after(delay time: Double, block: @escaping () -> Void) -> DispatchWorkItem {
         let item = DispatchWorkItem(block: block)
         let deadline = DispatchTime.now() + .milliseconds(Int(time * 1000))
         self.base.asyncAfter(deadline: deadline, execute: item)

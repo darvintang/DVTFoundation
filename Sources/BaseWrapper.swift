@@ -34,20 +34,24 @@
 import Foundation
 
 public struct BaseWrapper<BaseType> {
-    public var base: BaseType
+    // MARK: Lifecycle
     public init(_ value: BaseType) {
         self.base = value
     }
+
+    // MARK: Public
+    public var base: BaseType
 }
 
 public protocol NameSpace {
     associatedtype BaseType
-    var dvt: BaseType { set get }
     static var dvt: BaseType.Type { get }
+
+    var dvt: BaseType { set get }
 }
 
 public extension NameSpace {
-    var dvt: BaseWrapper<Self> { set {} get { BaseWrapper(self) }}
-
     static var dvt: BaseWrapper<Self>.Type { BaseWrapper.self }
+
+    var dvt: BaseWrapper<Self> { set { } get { BaseWrapper(self) }}
 }
