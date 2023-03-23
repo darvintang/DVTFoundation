@@ -59,7 +59,7 @@ public extension BaseWrapper where BaseType == Data {
     }
 
     var sha256: Data {
-        let length = Int(CC_MD5_DIGEST_LENGTH)
+        let length = Int(CC_SHA256_DIGEST_LENGTH)
         var digestData = Data(count: length)
         _ = digestData.withUnsafeMutableBytes { digestBytes -> UInt8 in
             self.base.withUnsafeBytes { messageBytes -> UInt8 in

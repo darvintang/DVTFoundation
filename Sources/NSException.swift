@@ -37,7 +37,6 @@ private extension NSException {
     typealias NSExceptionrRaiseCompletionBlock = (_ exception: NSException) -> Void
 
     static var NSException_DVTFoundation_raiseCompletionBlock_key: UInt8 = 0
-    static var NSException_DVTFoundation_Swizzleed_flag = false
 
     static var raiseCompletionBlock: NSExceptionrRaiseCompletionBlock? {
         set { objc_setAssociatedObject(self, &self.NSException_DVTFoundation_raiseCompletionBlock_key, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC) }
@@ -49,9 +48,9 @@ private extension NSException {
     }
 
     static func foundation_swizzleed() {
-        if self.NSException_DVTFoundation_Swizzleed_flag { return }
-        defer { self.NSException_DVTFoundation_Swizzleed_flag = true }
-        self.dvt_swizzleInstanceSelector(NSSelectorFromString("raise"), swizzle: #selector(dvt_foundation_raise))
+        DispatchQueue.dvt.once {
+            self.dvt_swizzleInstanceSelector(NSSelectorFromString("raise"), swizzle: #selector(dvt_foundation_raise))
+        }
     }
 
     @objc func dvt_foundation_raise() {

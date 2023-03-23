@@ -38,7 +38,8 @@ extension DispatchQueue: NameSpace { }
 private var DispatchQueue_onceIdentifier = [String]()
 
 public extension BaseWrapper where BaseType == DispatchQueue {
-    static func once(_ identifier: String = "\(#file):\(#function):\(#line)", block: () -> Void) {
+    static func once(_ file: String = #file, function: String = #function, line: Int = #line, block: () -> Void) {
+        let identifier = "\(file):\(function):\(line)"
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
         if DispatchQueue_onceIdentifier.contains(identifier) { return }

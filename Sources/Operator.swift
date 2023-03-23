@@ -78,3 +78,49 @@ public extension Dictionary where Key == String, Value == Any {
         right?.forEach { key, value in left[key] = value }
     }
 }
+
+public extension BinaryFloatingPoint {
+    static func < <T: FixedWidthInteger>(lhs: any BinaryFloatingPoint, rhs: T) -> Bool {
+        if let newRhs = Self(exactly: rhs) {
+            return newRhs >= lhs as! Self
+        }
+        return false
+    }
+
+    static func > <T: FixedWidthInteger>(lhs: any BinaryFloatingPoint, rhs: T) -> Bool {
+        if let newRhs = Self(exactly: rhs) {
+            return newRhs > lhs as! Self
+        }
+        return false
+    }
+
+    static func == <T: FixedWidthInteger>(lhs: any BinaryFloatingPoint, rhs: T) -> Bool {
+        if let newRhs = Self(exactly: rhs) {
+            return newRhs == lhs as! Self
+        }
+        return false
+    }
+}
+
+public extension FixedWidthInteger {
+    static func < <T: BinaryFloatingPoint>(lhs: any FixedWidthInteger, rhs: T) -> Bool {
+        if let newLhs = T(exactly: lhs) {
+            return newLhs < rhs
+        }
+        return false
+    }
+
+    static func > <T: BinaryFloatingPoint>(lhs: any FixedWidthInteger, rhs: T) -> Bool {
+        if let newLhs = T(exactly: lhs) {
+            return newLhs > rhs
+        }
+        return false
+    }
+
+    static func == <T: BinaryFloatingPoint>(lhs: any FixedWidthInteger, rhs: T) -> Bool {
+        if let newLhs = T(exactly: lhs) {
+            return newLhs == rhs
+        }
+        return false
+    }
+}
