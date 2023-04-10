@@ -37,6 +37,7 @@ import CommonCrypto
 extension Data: NameSpace { }
 
 public extension BaseWrapper where BaseType == Data {
+    // MARK: Internal
     @available(iOS, introduced: 2.0, deprecated: 13.0, message: "md5已经被系统标记为不安全，请使用sha256")
     var md5: Data {
         let length = Int(CC_MD5_DIGEST_LENGTH)
@@ -78,4 +79,54 @@ public extension BaseWrapper where BaseType == Data {
     var utf8String: String? { self.string() }
 
     func string(_ encoding: String.Encoding = .utf8) -> String? { String(data: self.base, encoding: encoding) }
+
+    // MARK: Private
+    private enum DigestType {
+        case sha1, sha224, sha256, sha384, sha512
+
+        // MARK: Internal
+        func digest(_ data: Data) -> Data {
+            let length: Int
+
+            switch self {
+                case .sha1:
+                    length = Int(CC_SHA1_DIGEST_LENGTH)
+                case .sha224:
+                    length = Int(CC_SHA224_DIGEST_LENGTH)
+                case .sha256:
+                    length = Int(CC_SHA256_DIGEST_LENGTH)
+                case .sha384:
+                    length = Int(CC_SHA384_DIGEST_LENGTH)
+                case .sha512:
+                    length = Int(CC_SHA512_DIGEST_LENGTH)
+            }
+
+            var digestData = Data(count: length)
+            _ = digestData.withUnsafeMutableBytes { digestBytes -> UInt8 in
+                data.withUnsafeBytes { messageBytes -> UInt8 in
+                    if let messageBytesBaseAddress = messageBytes.baseAddress, let digestBytesBlindMemory = digestBytes.bindMemory(to: UInt8.self).baseAddress {
+                        let messageLength = CC_LONG(data.count)
+                        switch self {
+                            case .sha1:
+                                CC_SHA1(messageBytesBaseAddress, messageLength, digestBytesBlindMemory)
+                            case .sha224:
+                                CC_SHA224(messageBytesBaseAddress, messageLength, digestBytesBlindMemory)
+                            case .sha256:
+                                CC_SHA256(messageBytesBaseAddress, messageLength, digestBytesBlindMemory)
+                            case .sha384:
+                                CC_SHA384(messageBytesBaseAddress, messageLength, digestBytesBlindMemory)
+                            case .sha512:
+                                CC_SHA512(messageBytesBaseAddress, messageLength, digestBytesBlindMemory)
+                        }
+                    }
+                    return 0
+                }
+            }
+            return digestData
+        }
+    }
+
+    private func digest(_ type: DigestType) -> Data {
+        type.digest(self.base)
+    }
 }
