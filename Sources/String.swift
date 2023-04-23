@@ -43,6 +43,11 @@ public extension BaseWrapper where BaseType == String {
         self.regularValidate("^1(3\\d|4[5-9]|5[0-35-9]|6[2567]|7[0-8]|8\\d|9[0-35-9])\\d{8}$")
     }
 
+    /// 字符串是空白的
+    var isBlank: Bool {
+        self.base.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     /// 获取从`start`开始到`end`结束(包含)的`Range<String.Index>`
     ///
     /// 如果`start`或`end`不在范围内直接返回nil

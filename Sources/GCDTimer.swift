@@ -63,10 +63,10 @@ open class GCDTimer {
     /// 初始化一个计时器
     /// - Parameters:
     ///   - queue: 计时器任务执行的队列
-    ///   - delay: 延迟时间
+    ///   - time: 延迟时间
     ///   - interval: 时间间隔，秒
     ///   - activate: 是否自动开启
-    ///   - work: 任务
+    ///   - item: 任务
     public convenience init(queue: DispatchQueue = .main, delay time: DispatchTime = .now(), repeating interval: Double,
                             auto activate: Bool = true, work item: DispatchWorkItem) {
         let milliseconds = Int(interval * 1000)
@@ -77,10 +77,10 @@ open class GCDTimer {
     /// 初始化一个计时器
     /// - Parameters:
     ///   - queue: 计时器任务执行的队列
-    ///   - delay: 延迟时间
+    ///   - time: 延迟时间
     ///   - interval: 时间间隔，秒
     ///   - activate: 是否自动开启
-    ///   - event: 任务
+    ///   - handler: 任务
     public convenience init(queue: DispatchQueue = .main, delay time: DispatchTime = .now(), repeating interval: Double,
                             auto activate: Bool = true, event handler: @escaping () -> Void) {
         let milliseconds = Int(interval * 1000)
@@ -91,10 +91,10 @@ open class GCDTimer {
     /// 初始化一个计时器
     /// - Parameters:
     ///   - queue: 计时器任务执行的队列
-    ///   - delay: 延迟时间
+    ///   - time: 延迟时间
     ///   - interval: 时间间隔，DispatchTimeInterval类型
     ///   - activate: 是否自动开启
-    ///   - event: 任务
+    ///   - handler: 任务
     public convenience init(queue: DispatchQueue = .main, delay time: DispatchTime = .now(),
                             repeating interval: DispatchTimeInterval = .never, auto activate: Bool = true,
                             event handler: @escaping () -> Void) {
@@ -105,10 +105,10 @@ open class GCDTimer {
     /// 初始化一个计时器
     /// - Parameters:
     ///   - queue: 计时器任务执行的队列
-    ///   - delay: 延迟时间
+    ///   - time: 延迟时间
     ///   - interval: 时间间隔，DispatchTimeInterval类型
     ///   - activate: 是否自动开启
-    ///   - work: 任务
+    ///   - item: 任务
     public init(queue: DispatchQueue = .main, delay time: DispatchTime = .now(),
                 repeating interval: DispatchTimeInterval = .never, auto activate: Bool = true,
                 work item: DispatchWorkItem) {
@@ -255,8 +255,8 @@ public extension GCDTimer {
     /// 初始化一个计时器
     /// - Parameters:
     ///   - queue: 计时器任务执行的队列
-    ///   - delay: 延迟时间, 秒
-    ///   - work: 任务
+    ///   - time: 延迟时间, 秒
+    ///   - item: 任务
     convenience init(queue: DispatchQueue = .main, delay time: TimeInterval, work item: DispatchWorkItem) {
         self.init(queue: queue, delay: .now() + time, repeating: .never, auto: true, work: item)
     }
@@ -264,8 +264,8 @@ public extension GCDTimer {
     /// 初始化一个计时器
     /// - Parameters:
     ///   - queue: 计时器任务执行的队列
-    ///   - delay: 延迟时间, 秒
-    ///   - event: 任务
+    ///   - time: 延迟时间, 秒
+    ///   - handler: 任务
     convenience init(queue: DispatchQueue = .main, delay time: TimeInterval, event handler: @escaping () -> Void) {
         self.init(queue: queue, delay: .now() + time, repeating: .never, auto: true, event: handler)
     }
