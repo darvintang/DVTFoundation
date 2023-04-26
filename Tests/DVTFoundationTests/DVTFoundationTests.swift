@@ -1,5 +1,5 @@
-@testable import DVTFoundation
 import XCTest
+@testable import DVTFoundation
 
 final class DVTFoundationTests: XCTestCase {
     func testString() throws {
@@ -83,8 +83,8 @@ final class DVTFoundationTests: XCTestCase {
 
     func testJSON() {
         let dict = """
-        {"key":"value"}
-        """.dvtJson.json
+            {"key":"value"}
+            """.dvtJson.json
         print([["key": "value", "key1": 123], ["key": "value", "key1": 123]].dvtJson.json ?? "")
         XCTAssertEqual(dict as? [String: String], ["key": "value"])
     }
@@ -94,8 +94,21 @@ final class DVTFoundationTests: XCTestCase {
     }
 
     func testArray() {
+        print(System.machine)
         var list = ["12"]
         XCTAssertEqual(list.dvt_remove("12"), "12")
         XCTAssertTrue(list.isEmpty)
+    }
+
+    func testCompareVersion() {
+        XCTAssertTrue("12.34.56".dvt.compare("12.3.56", separator: ".") == .greater)
+        XCTAssertTrue("12.2.56".dvt.compare("12.3.56", separator: ".") == .less)
+        XCTAssertTrue("12.34.56".dvt.compare("12.34.56", separator: ".") == .equal)
+        XCTAssertTrue("12.34.56".dvt.compare("12.34", separator: ".") == .greater)
+        XCTAssertTrue("12.34a.56".dvt.compare("12.34a", separator: ".") == .greater)
+        XCTAssertTrue("12.34a.56".dvt.compare("12.34a.1", separator: ".") == .greater)
+        XCTAssertTrue("12.34b.56".dvt.compare("12.34a.70", separator: ".") == .greater)
+        XCTAssertTrue("12.34a.56".dvt.compare("12.34a.70", separator: ".") == .less)
+        XCTAssertTrue("1.34a.56".dvt.compare("12.34a.1", separator: ".") == .less)
     }
 }

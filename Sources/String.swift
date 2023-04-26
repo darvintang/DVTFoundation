@@ -33,8 +33,6 @@
 
 import Foundation
 
-extension String: NameSpace { }
-
 public extension BaseWrapper where BaseType == String {
     /// NSString.length
     var nsCount: Int { (self.base as NSString).length }
@@ -231,7 +229,37 @@ public extension BaseWrapper where BaseType == String {
     var url: URL? { URL(string: self.base) }
 }
 
-extension Substring: NameSpace { }
 public extension BaseWrapper where BaseType == Substring {
     var string: String { String(self.base) }
+}
+
+public extension BaseWrapper where BaseType == String {
+    /// 用于版本号比较
+    ///
+    /// 通过分割标识将版本号分割为多个部分，然后再将每一部分转换成`UInt`进行比较
+    /// 如果转换失败，直接拿字符串进行比较
+    ///
+    /// - Parameters:
+    ///   - target: 对比的版本号
+    ///   - separator: 版本号分割标识, eg: "."、"-"、"_"
+    func compare(_ target: BaseType, separator: Character) -> ComparingResult {
+        let now = self.base.split(separator: separator)
+        let new = target.split(separator: separator)
+        let big = min(now.count, new.count)
+        for index in 0 ... big - 1 {
+            let first = now[index]
+            let second = new[index]
+            var res = ComparingResult.equal
+            if let firstValue = UInt(first), let secondValue = UInt(second) {
+                res = firstValue.dvt.compare(secondValue)
+            } else {
+                res = first.dvt.compare(second)
+            }
+
+            if res != .equal {
+                return res
+            }
+        }
+        return now.count.dvt.compare(new.count)
+    }
 }
